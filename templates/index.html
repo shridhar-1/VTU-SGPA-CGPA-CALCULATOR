@@ -1,29 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>CGPA Calculator - Upload</title>
+    <title>VTU CGPA Pro</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #eef2f3; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
-        .upload-card { background: white; padding: 50px 40px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; max-width: 500px; width: 100%; }
-        h2 { color: #2c3e50; font-size: 28px; margin-bottom: 10px; }
-        p { color: #7f8c8d; margin-bottom: 30px; }
-        .file-drop-area { border: 2px dashed #bdc3c7; border-radius: 12px; padding: 40px; background-color: #f8f9fa; transition: 0.3s; margin-bottom: 25px; cursor: pointer; }
-        .file-drop-area:hover { border-color: #3498db; background-color: #eaf2f8; }
-        input[type="file"] { font-size: 16px; color: #2c3e50; }
-        button { background: #27ae60; color: white; border: none; padding: 15px 30px; font-size: 18px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.3s; box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3); }
-        button:hover { background: #2ecc71; transform: translateY(-2px); }
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+            color: #fff;
+        }
+        .upload-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            padding: 50px 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+        h2 { font-size: 32px; margin-bottom: 10px; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        p { color: #e2e8f0; margin-bottom: 30px; font-weight: 300; }
+        .file-drop-area {
+            border: 2px dashed rgba(255, 255, 255, 0.5);
+            border-radius: 15px;
+            padding: 40px;
+            background-color: rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+            margin-bottom: 25px;
+            cursor: pointer;
+        }
+        .file-drop-area:hover {
+            border-color: #fff;
+            background-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+        input[type="file"] { font-size: 16px; color: #fff; }
+        input[type="file"]::file-selector-button {
+            background: #fff;
+            color: #764ba2;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-right: 15px;
+            transition: 0.3s;
+        }
+        input[type="file"]::file-selector-button:hover { background: #e2e8f0; }
+        button {
+            background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            font-size: 18px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            width: 100%;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(0, 114, 255, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(0, 114, 255, 0.5);
+        }
     </style>
 </head>
 <body>
     <div class="upload-card">
-        <h2>VTU CGPA Calculator</h2>
-        <p>Securely extract your marks and calculate your exact SGPA/CGPA in seconds.</p>
-        
+        <h2>🚀 VTU CGPA Pro</h2>
+        <p>Select your result PDFs and let the math engine do the rest.</p>
         <form action="/upload" method="POST" enctype="multipart/form-data">
             <div class="file-drop-area">
                 <input type="file" name="result_pdfs" accept=".pdf" multiple required>
             </div>
-            <button type="submit">Analyze Results</button>
+            <button type="submit">Analyze Results ✨</button>
         </form>
     </div>
 </body>
