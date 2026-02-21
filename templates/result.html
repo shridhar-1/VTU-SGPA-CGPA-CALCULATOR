@@ -3,30 +3,83 @@
 <head>
     <title>Your CGPA Result</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #eef2f3; display: flex; justify-content: center; padding: 40px 20px; margin: 0; }
-        .card { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 700px; text-align: center; }
-        h1 { color: #2c3e50; margin-top: 0; }
-        .cgpa-box { background: #27ae60; color: white; font-size: 64px; font-weight: bold; padding: 20px; border-radius: 12px; margin: 20px 0; box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3); }
-        .sem-header { background: #2c3e50; color: white; padding: 10px; border-radius: 8px; margin-top: 30px; font-size: 20px; }
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 40px 20px;
+            margin: 0;
+            color: #2d3748;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 50px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 750px;
+            text-align: center;
+        }
+        h1 { color: #1a202c; margin-top: 0; font-weight: 700; font-size: 36px;}
+        .cgpa-box {
+            background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+            color: white;
+            font-size: 72px;
+            font-weight: 800;
+            padding: 20px;
+            border-radius: 20px;
+            margin: 25px 0;
+            box-shadow: 0 10px 25px rgba(0, 114, 255, 0.3);
+            display: inline-block;
+            min-width: 200px;
+        }
+        .sem-header {
+            background: #2d3748;
+            color: white;
+            padding: 12px;
+            border-radius: 10px;
+            margin-top: 40px;
+            font-size: 22px;
+            font-weight: 600;
+            text-align: left;
+            padding-left: 20px;
+        }
         table { width: 100%; border-collapse: collapse; margin-top: 15px; margin-bottom: 30px; }
-        th, td { padding: 12px; border-bottom: 1px solid #ddd; text-align: center; }
-        th { background-color: #f8f9fa; color: #34495e; font-size: 14px; }
-        tr:hover { background-color: #f1f2f6; }
-        .btn { display: inline-block; padding: 12px 25px; background: #2980b9; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; transition: 0.3s; }
-        .btn:hover { background: #3498db; }
+        th, td { padding: 15px; border-bottom: 1px solid #e2e8f0; text-align: center; font-size: 15px;}
+        th { color: #4a5568; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;}
+        tr:hover { background-color: #f7fafc; }
+        .highlight-grade { font-weight: 700; color: #0072ff; }
+        .btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 16px 35px;
+            background: #2d3748;
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .btn:hover { background: #1a202c; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.15); }
     </style>
 </head>
 <body>
     <div class="card">
-        <h1>Overall CGPA Result</h1>
+        <h1>🏆 Grand Total CGPA</h1>
         <div class="cgpa-box">{{ data.cgpa }}</div>
-        <p style="color: #7f8c8d;">Total Credits: {{ data.total_credits }}</p>
+        <p style="color: #718096; font-size: 18px; font-weight: 600;">Total Credits Earned: {{ data.total_credits }}</p>
 
         {% for sem in data.semesters %}
-        <div class="sem-header">Semester {{ sem.semester }} - SGPA: {{ sem.sgpa }}</div>
+        <div class="sem-header">Semester {{ sem.semester }} <span style="float:right; color: #cbd5e0; margin-right: 15px;">SGPA: {{ sem.sgpa }}</span></div>
         <table>
             <tr>
-                <th>Code</th>
+                <th>Subject Code</th>
                 <th>Marks</th>
                 <th>Grade</th>
                 <th>Credits</th>
@@ -35,14 +88,17 @@
             <tr>
                 <td><strong>{{ subject.code }}</strong></td>
                 <td>{{ subject.marks }}</td>
-                <td>{{ subject.grade }}</td>
+                <td class="highlight-grade">{{ subject.grade }}</td>
                 <td>{{ subject.credits }}</td>
             </tr>
             {% endfor %}
         </table>
         {% endfor %}
 
-        <a href="/" class="btn">Calculate Another PDF</a>
+        <a href="/" class="btn">Calculate Another</a>
     </div>
 </body>
 </html>
+</body>
+</html>
+
