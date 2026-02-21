@@ -2,9 +2,15 @@
 <html lang="en">
 <head>
     <title>Your CGPA Result</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        * {
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent; /* Removes the blue flash when tapping buttons */
+            user-select: none; /* Prevents users from long-pressing and highlighting text */
+        }
         body {
             font-family: 'Poppins', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -14,6 +20,10 @@
             padding: 40px 20px;
             margin: 0;
             color: #2d3748;
+        }
+        body {
+            /* ... keep your existing styles ... */
+            overscroll-behavior: none; /* Stops the bouncy rubber-band effect at the top and bottom */
         }
         .card {
             background: rgba(255, 255, 255, 0.95);
@@ -142,4 +152,5 @@
     </script>
 </body>
 </html>
+
 
