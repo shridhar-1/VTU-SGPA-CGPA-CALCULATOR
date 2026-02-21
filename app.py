@@ -33,53 +33,62 @@ def get_grade_point(marks, grade):
 def calculate_cgpa_from_text(text):
     overall_credits = 0
     overall_earned = 0
-    semesters_data = []
-    
-    parts = re.split(r'Semester[\s:]+(\d+)', text, flags=re.IGNORECASE)
-    
-    # Standard VTU Regex Patter
+    sem_dict = {}
+
+    # Scan the ENTIRE document at once! No more splitting by "Semester"
     pattern = r'([A-Z0-9]+)\s+(.*?)\s+(\d+)\s+(\d+)\s+([A-Z\+]+)'
+    matches = re.findall(pattern, text)
 
-    for i in range(1, len(parts), 2):
+    for match in matches:
+        code = match[0]
+        marks = match[3]
+        res = match[4]
+        
         try:
-            sem_num = int(parts[i])
-            sem_text = parts[i+1]
-        except (IndexError, ValueError):
+            marks = int(marks)
+        except ValueError:
             continue
-
-        sem_credits = 0
-        sem_earned = 0
-        subjects_data = []
-
-        matches = re.findall(pattern, sem_text)
-        for match in matches:
-            code = match[0]
-            marks = match[3]
-            res = match[4]
             
-            try:
-                marks = int(marks)
-            except ValueError:
-                continue
-                
-            if code in CREDIT_MAP:
-                c = CREDIT_MAP[code]
-                gp = get_grade_point(marks, res)
-                
-                sem_credits += c
-                sem_earned += (gp * c)
-                subjects_data.append({"code": code, "marks": marks, "grade": res, "credits": c})
-
-        if sem_credits > 0:
-            sgpa = sem_earned / sem_credits
-            overall_credits += sem_credits
-            overall_earned += sem_earned
-            semesters_data.append({
-                "semester": sem_num,
-                "sgpa": round(sgpa, 2),
-                "credits": sem_credits,
-                "subjects": subjects_data
+        if code in CREDIT_MAP:
+            c = CREDIT_MAP[code]
+            gp = get_grade_point(marks, res)
+            
+            # Auto-detect semester from subject code! (e.g. BMATE201 -> 2)
+            sem_match = re.search(r'\D+(\d)', code)
+            sem_num = int(sem_match.group(1)) if sem_match else 1
+            
+            if sem_num not in sem_dict:
+                sem_dict[sem_num] = {"credits": 0, "earned": 0, "subjects": []}
+            
+            sem_dict[sem_num]["credits"] += c
+            sem_dict[sem_num]["earned"] += (gp * c)
+            sem_dict[sem_num]["subjects"].append({
+                "code": code, "marks": marks, "grade": res, "credits": c
             })
+            
+            overall_credits += c
+            overall_earned += (gp * c)
+
+    if overall_credits == 0:
+        return {"error": "Invalid PDF: Could not find VTU subjects. Check if your subject codes are correctly added to the CREDIT_MAP at the top of app.py!"}
+
+    semesters_data = []
+    for sem_num in sorted(sem_dict.keys()):
+        s_data = sem_dict[sem_num]
+        sgpa = s_data["earned"] / s_data["credits"]
+        semesters_data.append({
+            "semester": sem_num,
+            "sgpa": round(sgpa, 2),
+            "credits": s_data["credits"],
+            "subjects": s_data["subjects"]
+        })
+
+    cgpa = overall_earned / overall_credits
+    return {
+        "cgpa": round(cgpa, 2),
+        "total_credits": overall_credits,
+        "semesters": semesters_data
+    }
 
     if overall_credits == 0:
         return {"error": f"DEBUG X-RAY - HERE IS WHAT THE APP SEES:<br><pre>{text[:2000]}</pre>"}
@@ -124,6 +133,7 @@ def upload_file():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
 
 
 
