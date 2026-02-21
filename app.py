@@ -38,7 +38,7 @@ def calculate_cgpa_from_text(text):
     parts = re.split(r'Semester\s+(\d+)', text, flags=re.IGNORECASE)
     
     # Standard VTU Regex Pattern
-    pattern = r'([A-Z0-9]+)\s+(.*?)\s+(\d+)\s+(\d+)\s+([O|A\+|A|B\+|B|C|P|F]+)'
+   pattern = r'([A-Z0-9]+)\s+(.*?)\s+(\d+)\s+(\d+)\s+([A-Z\+]+)'
 
     for i in range(1, len(parts), 2):
         try:
@@ -125,3 +125,4 @@ def upload_file():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
