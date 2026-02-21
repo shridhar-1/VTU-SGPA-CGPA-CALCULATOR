@@ -103,7 +103,10 @@
         <h1>🏆 Grand Total CGPA</h1>
         <div class="cgpa-box">{{ data.cgpa }}</div>
         <p style="color: #718096; font-size: 18px; font-weight: 600;">Total Credits Earned: {{ data.total_credits }}</p>
-
+        body {
+            /* ... keep your existing styles ... */
+            overscroll-behavior: none; /* Stops the bouncy rubber-band effect at the top and bottom */
+        }
         {% for sem in data.semesters %}
         <div class="sem-header">Semester {{ sem.semester }} <span style="float:right; color: #cbd5e0; margin-right: 15px;">SGPA: {{ sem.sgpa }}</span></div>
         <table>
@@ -152,5 +155,6 @@
     </script>
 </body>
 </html>
+
 
 
