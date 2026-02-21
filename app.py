@@ -82,8 +82,7 @@ def calculate_cgpa_from_text(text):
             })
 
     if overall_credits == 0:
-        return {"error": "Invalid PDF: Could not find any VTU subjects or credits."}
-
+        return {"error": f"DEBUG X-RAY - HERE IS WHAT THE APP SEES:<br><pre>{text[:2000]}</pre>"}
     cgpa = overall_earned / overall_credits
     return {
         "cgpa": round(cgpa, 2),
@@ -125,5 +124,6 @@ def upload_file():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
 
 
