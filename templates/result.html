@@ -80,7 +80,10 @@
         .btn:hover { background: #1a202c; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.15); }
         .btn-pdf { background: #e53e3e; }
         .btn-pdf:hover { background: #c53030; }
-        
+        /* PDF Export Fixes */
+        tr, .sem-header, .cgpa-box {
+            page-break-inside: avoid !important;
+        }
         /* Hide buttons when downloading the PDF */
         .hide-on-pdf { display: flex; }
     </style>
@@ -139,3 +142,4 @@
     </script>
 </body>
 </html>
+
