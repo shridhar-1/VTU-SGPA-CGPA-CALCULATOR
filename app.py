@@ -55,8 +55,6 @@ def calculate_cgpa_from_text(text):
                     sem_credits += c
                     sem_earned += (gp * c)
                     subjects_data.append({"code": code, "marks": marks, "grade": gp, "credits": c})
-            # --- SAFETY NET FOR INVALID PDFs ---
-    if total_credits == 0:
         return {"error": "Invalid PDF. No VTU grades or credits were found in this document!"}
         
     # (Your existing math code continues here...)
@@ -129,3 +127,4 @@ def upload_file():
 if __name__ == '__main__':
 
     app.run(debug=True)
+
