@@ -97,6 +97,19 @@
         }
         /* Hide buttons when downloading the PDF */
         .hide-on-pdf { display: flex; }
+        /* --- MOBILE APP FULLSCREEN FIX --- */
+        @media (max-width: 768px) {
+            body {
+                padding: 0 !important; /* Removes the purple gap around the edges */
+            }
+            .card {
+                border-radius: 0 !important; /* Removes the rounded corners */
+                min-height: 100vh; /* Stretches the glass from top to bottom */
+                box-shadow: none !important; /* Removes the floating shadow */
+                padding: 40px 15px; /* Perfect spacing for mobile thumbs */
+                margin: 0;
+            }
+        }
     </style>
 </head>
 <body>
@@ -156,6 +169,7 @@
     </script>
 </body>
 </html>
+
 
 
 
