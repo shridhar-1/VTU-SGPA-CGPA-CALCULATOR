@@ -77,6 +77,19 @@
             transform: translateY(-3px);
             box-shadow: 0 12px 25px rgba(0, 114, 255, 0.5);
         }
+        /* --- MOBILE APP FULLSCREEN FIX --- */
+        @media (max-width: 768px) {
+            body {
+                padding: 0 !important; /* Removes the purple gap around the edges */
+            }
+            .card {
+                border-radius: 0 !important; /* Removes the rounded corners */
+                min-height: 100vh; /* Stretches the glass from top to bottom */
+                box-shadow: none !important; /* Removes the floating shadow */
+                padding: 40px 15px; /* Perfect spacing for mobile thumbs */
+                margin: 0;
+            }
+        }
     </style>
 </head>
 <body>
@@ -92,5 +105,6 @@
     </div>
 </body>
 </html>
+
 
 
