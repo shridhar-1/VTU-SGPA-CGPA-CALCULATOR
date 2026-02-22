@@ -152,18 +152,22 @@
         };
 
         // --- 2. MOBILE-SAFE PDF DOWNLOAD LOGIC ---
+        // --- 2. PERFECTLY FORMATTED PDF DOWNLOAD LOGIC ---
         function downloadPDF() {
             document.getElementById('buttons-container').style.display = 'none';
             document.getElementById('scrollTopBtn').style.display = 'none'; 
             
             const element = document.getElementById('result-card');
             
-            // Mobile-safe scale (1) prevents Android memory crash
             const opt = {
-                margin: 0.2, 
-                filename: 'VTU_CGPA_Result.pdf', 
-                image: { type: 'jpeg', quality: 0.95 },
-                html2canvas: { scale: 1, useCORS: true }, 
+                margin: 0.3, 
+                filename: 'VTU_CGPA_Grand_Total.pdf', 
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { 
+                    scale: 1.5, // Crisp text, but safe for Android memory
+                    useCORS: true,
+                    windowWidth: 800 // THE FIX: Forces the PDF to render perfectly like a laptop screen!
+                }, 
                 jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
             };
             
@@ -189,3 +193,4 @@
     </script>
 </body>
 </html>
+
