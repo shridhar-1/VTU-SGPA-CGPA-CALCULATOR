@@ -142,23 +142,38 @@
 
     <button onclick="scrollToTop()" id="scrollTopBtn" title="Go to top">⬆️</button>
 
+  <button onclick="scrollToTop()" id="scrollTopBtn" title="Go to top">⬆️</button>
+
     <script>
-        // PDF Download Logic
+        // --- 1. ANDROID BACK BUTTON FIX ---
+        window.history.pushState(null, null, window.location.href);
+        window.onpopstate = function () {
+            window.location.href = '/'; // Forces the back button to go to the homepage
+        };
+
+        // --- 2. MOBILE-SAFE PDF DOWNLOAD LOGIC ---
         function downloadPDF() {
             document.getElementById('buttons-container').style.display = 'none';
-            document.getElementById('scrollTopBtn').style.display = 'none'; // Hide scroll button in PDF
+            document.getElementById('scrollTopBtn').style.display = 'none'; 
+            
             const element = document.getElementById('result-card');
+            
+            // Mobile-safe scale (1) prevents Android memory crash
             const opt = {
-                margin: 0.5, filename: 'VTU_CGPA_Result.pdf', image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+                margin: 0.2, 
+                filename: 'VTU_CGPA_Result.pdf', 
+                image: { type: 'jpeg', quality: 0.95 },
+                html2canvas: { scale: 1, useCORS: true }, 
+                jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
             };
+            
             html2pdf().set(opt).from(element).save().then(() => {
                 document.getElementById('buttons-container').style.display = 'flex';
                 document.getElementById('scrollTopBtn').style.display = 'block';
             });
         }
 
-        // Scroll to Top Logic
+        // --- 3. SCROLL TO TOP LOGIC ---
         window.onscroll = function() {scrollFunction()};
         function scrollFunction() {
             let scrollBtn = document.getElementById("scrollTopBtn");
