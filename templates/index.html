@@ -10,20 +10,38 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
         body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #ffffff; /* Clean white app background */
-            margin: 0;
-            padding: 0;
-            color: #111827;
+            font-family: 'Poppins', sans-serif; background-color: #ffffff;
+            margin: 0; padding: 0; color: #111827; overflow-x: hidden;
         }
         
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 30px 20px;
+        /* --- 1. THE SPLASH SCREEN CSS --- */
+        #splash-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #ffffff; z-index: 9999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
         }
         
-        /* 1. The Big Friendly Header */
+        .splash-icon {
+            font-size: 80px;
+            animation: float 2s ease-in-out infinite;
+        }
+        
+        .splash-text {
+            font-size: 28px; font-weight: 800; margin-top: 15px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff4757 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        /* --- MAIN APP CSS --- */
+        .container { max-width: 600px; margin: 0 auto; padding: 30px 20px; }
         .header { margin-bottom: 25px; }
         .header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; }
         .greeting { font-size: 22px; font-weight: 800; margin: 0; line-height: 1.2; letter-spacing: -0.5px; }
@@ -32,82 +50,52 @@
         .main-title { font-size: 38px; font-weight: 800; margin: 0 0 5px 0; line-height: 1.1; letter-spacing: -1px; }
         .sub-title { color: #6b7280; font-size: 14px; font-weight: 400; margin: 0; line-height: 1.4; }
         
-        /* 2. The Colorful Hero Banner */
         .hero-banner {
             background: linear-gradient(135deg, #ff6b6b 0%, #ff4757 100%);
-            border-radius: 20px;
-            padding: 30px 20px;
-            color: white;
-            text-align: center;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 25px rgba(255, 71, 87, 0.25);
-            position: relative;
-            overflow: hidden;
+            border-radius: 20px; padding: 30px 20px; color: white; text-align: center; margin-bottom: 30px;
+            box-shadow: 0 10px 25px rgba(255, 71, 87, 0.25); position: relative; overflow: hidden;
         }
-        .hero-banner::after {
-            content: "✨"; position: absolute; top: -10px; right: 10px; font-size: 60px; opacity: 0.1;
-        }
+        .hero-banner::after { content: "✨"; position: absolute; top: -10px; right: 10px; font-size: 60px; opacity: 0.1; }
         .hero-banner h3 { margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -1px; }
         .hero-banner p { margin: 5px 0 0 0; font-size: 14px; opacity: 0.9; }
 
-        /* 3. The Upload Section (Mimicking "Result & Analysis") */
         .section-title { font-size: 18px; font-weight: 800; margin: 0 0 15px 0; text-align: center; }
         
         .upload-card {
-            background: #ffffff;
-            border-radius: 24px;
-            padding: 20px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
-            border: 1px solid #f3f4f6;
-            margin-bottom: 20px;
+            background: #ffffff; border-radius: 24px; padding: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 1px solid #f3f4f6; margin-bottom: 20px;
         }
         
         .file-drop-area {
-            position: relative;
-            background: #f9fafb;
-            border: 2px dashed #d1d5db;
-            border-radius: 16px;
-            padding: 35px 20px;
-            text-align: center;
-            transition: all 0.3s ease;
-            cursor: pointer;
+            position: relative; background: #f9fafb; border: 2px dashed #d1d5db; border-radius: 16px;
+            padding: 35px 20px; text-align: center; transition: all 0.3s ease; cursor: pointer;
         }
         .file-drop-area:active { background: #f3f4f6; border-color: #9ca3af; }
-        
-        .file-drop-area input[type=file] {
-            position: absolute; left: 0; top: 0; width: 100%; height: 100%;
-            opacity: 0; cursor: pointer;
-        }
+        .file-drop-area input[type=file] { position: absolute; left: 0; top: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
         
         .drop-icon { font-size: 40px; margin-bottom: 10px; display: block; }
         .drop-text { font-size: 16px; color: #374151; font-weight: 600; margin: 0; }
         .drop-sub { font-size: 12px; color: #9ca3af; margin-top: 5px; }
         
-        #file-name {
-            margin-top: 15px; font-size: 14px; color: #10b981; font-weight: 600; text-align: center;
-        }
+        #file-name { margin-top: 15px; font-size: 14px; color: #10b981; font-weight: 600; text-align: center; }
         
-        /* 4. Modern Pill Button */
         .submit-btn {
-            width: 100%;
-            background: #111827;
-            color: white;
-            border: none;
-            padding: 18px;
-            border-radius: 100px; /* Fully rounded pill shape */
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+            width: 100%; background: #111827; color: white; border: none; padding: 18px;
+            border-radius: 100px; font-size: 16px; font-weight: 600; cursor: pointer;
+            transition: all 0.2s ease; box-shadow: 0 8px 15px rgba(0,0,0,0.1);
         }
         .submit-btn:active { transform: scale(0.98); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         
     </style>
 </head>
 <body>
+
+    <div id="splash-screen">
+        <div class="splash-icon">🚀</div>
+        <div class="splash-text">VTU CGPA Pro</div>
+    </div>
+
     <div class="container">
-        
         <div class="header">
             <div class="header-top">
                 <h1 class="greeting">Hello, VTU Student!</h1>
@@ -122,9 +110,8 @@
             <p>100% accurate grand total in seconds.</p>
         </div>
 
-        <form action="/upload" method="POST" enctype="multipart/form-data">
+        <form action="/upload" method="POST" enctype="multipart/form-data" id="upload-form">
             <h3 class="section-title">Result & Analysis</h3>
-            
             <div class="upload-card">
                 <div class="file-drop-area">
                     <span class="drop-icon">📑</span>
@@ -134,13 +121,21 @@
                 </div>
                 <div id="file-name"></div>
             </div>
-
-            <button type="submit" class="submit-btn">Calculate Now</button>
+            <button type="submit" class="submit-btn" id="calc-btn">Calculate Now</button>
         </form>
-        
     </div>
 
     <script>
+        // Removes the splash screen after exactly 1.5 seconds
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                const splash = document.getElementById('splash-screen');
+                splash.style.opacity = '0';
+                splash.style.visibility = 'hidden';
+            }, 1500);
+        });
+
+        // Updates file name text
         function updateFileName(input) {
             const fileNameDiv = document.getElementById('file-name');
             if (input.files.length === 1) {
