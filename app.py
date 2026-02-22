@@ -19,16 +19,20 @@ CREDIT_MAP = {
     "BEC401": 4, "BEC402": 4
 }
 
-def get_grade_point(grade):
-    grade = str(grade).strip().upper()
-    if grade == 'O': return 10
-    elif grade == 'A+': return 9
-    elif grade == 'A': return 8
-    elif grade == 'B+': return 7
-    elif grade == 'B': return 6
-    elif grade == 'C': return 5
-    elif grade == 'P': return 4
-    else: return 0
+# GOD MODE: Calculate exact grades directly from marks (VTU 2022 Scheme)
+def calculate_vtu_grade(marks, result_status):
+    if result_status == 'F': 
+        return 'F', 0
+        
+    marks = int(marks)
+    if marks >= 90: return 'O', 10
+    elif marks >= 80: return 'A+', 9
+    elif marks >= 70: return 'A', 8
+    elif marks >= 60: return 'B+', 7
+    elif marks >= 55: return 'B', 6
+    elif marks >= 50: return 'C', 5
+    elif marks >= 40: return 'P', 4
+    else: return 'F', 0
 
 def process_pdf(files):
     overall_credits = 0
@@ -38,8 +42,6 @@ def process_pdf(files):
     for file in files:
         with pdfplumber.open(file) as pdf:
             for page in pdf.pages:
-                
-                # layout=True forces the text to align perfectly, pushing the watermark out of the way!
                 text = page.extract_text(layout=True)
                 if not text:
                     text = page.extract_text()
@@ -51,14 +53,15 @@ def process_pdf(files):
                 for line in lines:
                     for code, c in CREDIT_MAP.items():
                         if code in line:
-                            # THE SNIPER REGEX: Looks ONLY for Total Marks (digits) followed exactly by a Grade
-                            # Example: "85 A" or "61 P". Ignores stray letters!
-                            grade_match = re.search(r'\b(\d{1,3})\s+(O|A\+|A|B\+|B|C|P|F)\b', line)
+                            # NEW REGEX: Grabs Total Marks sitting right next to the 'P' (Pass) or 'F' (Fail)
+                            grade_match = re.search(r'\b(\d{1,3})\s+(P|F)\b', line)
                             
                             if grade_match:
                                 marks = grade_match.group(1)
-                                grade = grade_match.group(2)
-                                gp = get_grade_point(grade)
+                                result_status = grade_match.group(2)
+                                
+                                # Let Python calculate the perfect grade!
+                                grade_letter, gp = calculate_vtu_grade(marks, result_status)
                                 
                                 sem_match = re.search(r'\D+(\d)', code)
                                 sem_num = int(sem_match.group(1)) if sem_match else 1
@@ -71,13 +74,13 @@ def process_pdf(files):
                                     sem_dict[sem_num]["credits"] += c
                                     sem_dict[sem_num]["earned"] += (gp * c)
                                     sem_dict[sem_num]["subjects"].append({
-                                        "code": code, "marks": marks, "grade": grade, "credits": c
+                                        "code": code, "marks": marks, "grade": grade_letter, "credits": c
                                     })
                                     overall_credits += c
                                     overall_earned += (gp * c)
 
     if overall_credits == 0:
-        return {"error": "Invalid PDF: The VTU watermark blocked the text. Please try again!"}
+        return {"error": "Invalid PDF: Could not extract marks. Please try again!"}
 
     semesters_data = []
     for sem_num in sorted(sem_dict.keys()):
