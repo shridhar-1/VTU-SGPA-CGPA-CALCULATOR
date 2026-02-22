@@ -4,7 +4,7 @@ from flask import Flask, request, render_template
 
 app = Flask(__name__)
 
-# Master VTU Credit Dictionary
+# Master VTU Credit Dictionary (1st, 2nd, & 3rd Sem ECE)
 CREDIT_MAP = {
     # 1st & 2nd Semester
     "BMATE101": 4, "BCHEE102": 4, "BCEDK103": 3, "BENGK106": 1,
@@ -39,65 +39,45 @@ def process_pdf(files):
         with pdfplumber.open(file) as pdf:
             for page in pdf.pages:
                 
-                # METHOD 1: Table Extraction (Bypasses Watermarks perfectly!)
-                tables = page.extract_tables()
-                for table in tables:
-                    for row in table:
-                        row_text = " ".join([str(cell) for cell in row if cell])
-                        
-                        for code, c in CREDIT_MAP.items():
-                            if code in row_text:
-                                # Find the standalone grade (O, A+, A, B+, B, C, P, F)
-                                grade_match = re.search(r'\b(O|A\+|A|B\+|B|C|P|F)\b', row_text)
-                                if grade_match:
-                                    grade = grade_match.group(1)
-                                    gp = get_grade_point(grade)
-                                    
-                                    # Auto-detect semester from code (e.g., BEC302 -> 3)
-                                    sem_match = re.search(r'\D+(\d)', code)
-                                    sem_num = int(sem_match.group(1)) if sem_match else 1
-                                    
-                                    if sem_num not in sem_dict:
-                                        sem_dict[sem_num] = {"credits": 0, "earned": 0, "subjects": []}
-                                        
-                                    existing_codes = [s['code'] for s in sem_dict[sem_num]["subjects"]]
-                                    if code not in existing_codes:
-                                        sem_dict[sem_num]["credits"] += c
-                                        sem_dict[sem_num]["earned"] += (gp * c)
-                                        sem_dict[sem_num]["subjects"].append({
-                                            "code": code, "marks": "-", "grade": grade, "credits": c
-                                        })
-                                        overall_credits += c
-                                        overall_earned += (gp * c)
-
-                # METHOD 2: Aggressive Fallback if VTU hides the table lines
-                text = page.extract_text() + "\n"
-                for code, c in CREDIT_MAP.items():
-                    found = any(code in [s['code'] for s in s_data['subjects']] for s_data in sem_dict.values())
-                    if not found and code in text:
-                        code_idx = text.find(code)
-                        chunk = text[code_idx:code_idx+200]
-                        grade_match = re.search(r'\b(O|A\+|A|B\+|B|C|P|F)\b', chunk)
-                        if grade_match:
-                            grade = grade_match.group(1)
-                            gp = get_grade_point(grade)
+                # layout=True forces the text to align perfectly, pushing the watermark out of the way!
+                text = page.extract_text(layout=True)
+                if not text:
+                    text = page.extract_text()
+                
+                if not text:
+                    continue
+                    
+                lines = text.split('\n')
+                for line in lines:
+                    for code, c in CREDIT_MAP.items():
+                        if code in line:
+                            # THE SNIPER REGEX: Looks ONLY for Total Marks (digits) followed exactly by a Grade
+                            # Example: "85 A" or "61 P". Ignores stray letters!
+                            grade_match = re.search(r'\b(\d{1,3})\s+(O|A\+|A|B\+|B|C|P|F)\b', line)
                             
-                            sem_match = re.search(r'\D+(\d)', code)
-                            sem_num = int(sem_match.group(1)) if sem_match else 1
-                            
-                            if sem_num not in sem_dict:
-                                sem_dict[sem_num] = {"credits": 0, "earned": 0, "subjects": []}
+                            if grade_match:
+                                marks = grade_match.group(1)
+                                grade = grade_match.group(2)
+                                gp = get_grade_point(grade)
                                 
-                            sem_dict[sem_num]["credits"] += c
-                            sem_dict[sem_num]["earned"] += (gp * c)
-                            sem_dict[sem_num]["subjects"].append({
-                                "code": code, "marks": "-", "grade": grade, "credits": c
-                            })
-                            overall_credits += c
-                            overall_earned += (gp * c)
+                                sem_match = re.search(r'\D+(\d)', code)
+                                sem_num = int(sem_match.group(1)) if sem_match else 1
+                                
+                                if sem_num not in sem_dict:
+                                    sem_dict[sem_num] = {"credits": 0, "earned": 0, "subjects": []}
+                                    
+                                existing_codes = [s['code'] for s in sem_dict[sem_num]["subjects"]]
+                                if code not in existing_codes:
+                                    sem_dict[sem_num]["credits"] += c
+                                    sem_dict[sem_num]["earned"] += (gp * c)
+                                    sem_dict[sem_num]["subjects"].append({
+                                        "code": code, "marks": marks, "grade": grade, "credits": c
+                                    })
+                                    overall_credits += c
+                                    overall_earned += (gp * c)
 
     if overall_credits == 0:
-        return {"error": "Invalid PDF: The VTU watermark is completely blocking the text, or Subject Codes are missing!"}
+        return {"error": "Invalid PDF: The VTU watermark blocked the text. Please try again!"}
 
     semesters_data = []
     for sem_num in sorted(sem_dict.keys()):
