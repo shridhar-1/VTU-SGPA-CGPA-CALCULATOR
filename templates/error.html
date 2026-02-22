@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oops! Something went wrong</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f9fafb;
+            margin: 0; padding: 20px;
+            display: flex; justify-content: center; align-items: center; min-height: 100vh;
+            color: #111827;
+        }
+        
+        .container {
+            background: #ffffff;
+            max-width: 500px; width: 100%;
+            padding: 40px 30px;
+            border-radius: 24px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        h2 { margin-top: 0; font-weight: 800; font-size: 24px; }
+        .error-msg { background: #fee2e2; color: #991b1b; padding: 15px; border-radius: 12px; font-weight: 600; font-size: 14px; margin-bottom: 25px;}
+        .success-msg { background: #d1fae5; color: #065f46; padding: 15px; border-radius: 12px; font-weight: 600; font-size: 14px; margin-bottom: 25px;}
+        
+        textarea {
+            width: 100%; height: 100px; padding: 15px; border: 2px solid #e5e7eb;
+            border-radius: 12px; font-family: 'Poppins', sans-serif; font-size: 14px;
+            resize: none; margin-bottom: 15px; outline: none; box-sizing: border-box;
+        }
+        textarea:focus { border-color: #111827; }
+
+        .btn {
+            width: 100%; background: #111827; color: white; border: none; padding: 16px;
+            border-radius: 100px; font-size: 16px; font-weight: 600; cursor: pointer;
+            margin-bottom: 10px; transition: 0.2s; text-decoration: none; display: inline-block; box-sizing: border-box;
+        }
+        .btn:active { transform: scale(0.98); }
+        .btn-home { background: #f3f4f6; color: #374151; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        {% if success %}
+            <div style="font-size: 50px; margin-bottom: 10px;">✅</div>
+            <h2>Feedback Sent!</h2>
+            <div class="success-msg">{{ error_msg }}</div>
+            <a href="/" class="btn">Go Back Home</a>
+        {% else %}
+            <div style="font-size: 50px; margin-bottom: 10px;">⚠️</div>
+            <h2>Result Generation Failed</h2>
+            <div class="error-msg">{{ error_msg }}</div>
+            
+            <p style="font-size: 14px; color: #4b5563; font-weight: 600; text-align: left;">What went wrong?</p>
+            <form action="/feedback" method="POST">
+                <textarea name="issue_text" placeholder="Example: I uploaded my 3rd semester result but it said invalid PDF..." required></textarea>
+                <button type="submit" class="btn">Send Bug Report</button>
+            </form>
+            <a href="/" class="btn btn-home">Try Again</a>
+        {% endif %}
+    </div>
+</body>
+</html>
+
