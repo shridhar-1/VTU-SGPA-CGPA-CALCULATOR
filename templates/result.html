@@ -180,7 +180,7 @@
                 const link = document.createElement('a');
                 link.style.display = 'none';
                 link.href = blobUrl;
-                link.download = 'VTU_CGPA_Result.pdf'; // Forces the exact name and extension
+                link.download = 'VTU_CGPA_' + Math.floor(Date.now() / 1000) + '.pdf'; // Forces the exact name and extension
                 
                 document.body.appendChild(link);
                 link.click();
@@ -197,5 +197,6 @@
     </script>
 </body>
 </html>
+
 
 
