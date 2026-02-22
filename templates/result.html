@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your CGPA Result</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
-        * {
-            box-sizing: border-box; 
-            -webkit-tap-highlight-color: transparent; /* Removes the blue flash when tapping buttons */
-            user-select: none; /* Prevents users from long-pressing and highlighting text */
-        }
+        
+        * { box-sizing: border-box; }
+        
         body {
             font-family: 'Poppins', sans-serif;
-            touch-action: none;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
@@ -22,93 +22,84 @@
             margin: 0;
             color: #2d3748;
         }
-        body {
-            /* ... keep your existing styles ... */
-            overscroll-behavior: none; /* Stops the bouncy rubber-band effect at the top and bottom */
-        }
+        
         .card {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(20px);
-            padding: 50px;
+            padding: 50px 30px;
             border-radius: 24px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.2);
             width: 100%;
             max-width: 750px;
             text-align: center;
         }
-        h1 { color: #1a202c; margin-top: 0; font-weight: 700; font-size: 36px;}
+        
+        h1 { color: #1a202c; margin-top: 0; font-weight: 700; font-size: 32px;}
+        
         .cgpa-box {
             background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
             color: white;
-            font-size: 72px;
+            font-size: 64px;
             font-weight: 800;
-            padding: 20px;
+            padding: 15px 30px;
             border-radius: 20px;
-            margin: 25px 0;
+            margin: 20px 0;
             box-shadow: 0 10px 25px rgba(0, 114, 255, 0.3);
             display: inline-block;
-            min-width: 200px;
+            min-width: 180px;
         }
+        
         .sem-header {
             background: #2d3748;
             color: white;
             padding: 12px;
             border-radius: 10px;
             margin-top: 40px;
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 600;
             text-align: left;
             padding-left: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; margin-bottom: 30px; }
-        th, td { padding: 15px; border-bottom: 1px solid #e2e8f0; text-align: center; font-size: 15px;}
-        th { color: #4a5568; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;}
+        
+        .sgpa-text { color: #cbd5e0; margin-right: 15px; font-size: 18px; }
+        
+        .table-container { overflow-x: auto; margin-top: 15px; margin-bottom: 30px; }
+        table { width: 100%; border-collapse: collapse; min-width: 400px; }
+        th, td { padding: 12px; border-bottom: 1px solid #e2e8f0; text-align: center; font-size: 14px;}
+        th { color: #4a5568; font-size: 13px; text-transform: uppercase; letter-spacing: 1px;}
         tr:hover { background-color: #f7fafc; }
         .highlight-grade { font-weight: 700; color: #0072ff; }
         
-        /* Button Container */
         .action-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 30px;
+            display: flex; justify-content: center; gap: 15px; margin-top: 30px; flex-wrap: wrap;
         }
+        
         .btn {
-            padding: 16px 35px;
-            background: #2d3748;
-            color: white;
-            text-decoration: none;
-            border: none;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 16px;
-            font-family: 'Poppins', sans-serif;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            padding: 14px 28px; background: #2d3748; color: white; text-decoration: none;
+            border: none; border-radius: 12px; font-weight: 700; font-size: 15px;
+            cursor: pointer; transition: all 0.3s ease; text-transform: uppercase;
         }
-        .btn:hover { background: #1a202c; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.15); }
+        .btn:hover { background: #1a202c; transform: translateY(-3px); }
         .btn-pdf { background: #e53e3e; }
         .btn-pdf:hover { background: #c53030; }
-        /* PDF Export Fixes */
-        tr, .sem-header, .cgpa-box {
-            page-break-inside: avoid !important;
+
+        /* 2. Floating Scroll to Top Button */
+        #scrollTopBtn {
+            display: none; position: fixed; bottom: 20px; right: 20px; z-index: 99;
+            border: none; outline: none; background-color: #0072ff; color: white;
+            cursor: pointer; padding: 15px; border-radius: 50%; font-size: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: 0.3s;
         }
-        /* Hide buttons when downloading the PDF */
-        .hide-on-pdf { display: flex; }
-        /* --- MOBILE APP FULLSCREEN FIX --- */
+        #scrollTopBtn:hover { background-color: #1a202c; }
+        
+        tr, .sem-header, .cgpa-box { page-break-inside: avoid !important; }
+
         @media (max-width: 768px) {
-            body {
-                padding: 0 !important; /* Removes the purple gap around the edges */
-            }
-            .card {
-                border-radius: 0 !important; /* Removes the rounded corners */
-                min-height: 100vh; /* Stretches the glass from top to bottom */
-                box-shadow: none !important; /* Removes the floating shadow */
-                padding: 40px 15px; /* Perfect spacing for mobile thumbs */
-                margin: 0;
-            }
+            body { padding: 0 !important; }
+            .card { border-radius: 0 !important; min-height: 100vh; padding: 40px 15px; margin: 0; }
         }
     </style>
 </head>
@@ -116,61 +107,70 @@
     <div class="card" id="result-card">
         <h1>🏆 Grand Total CGPA</h1>
         <div class="cgpa-box">{{ data.cgpa }}</div>
-        <p style="color: #718096; font-size: 18px; font-weight: 600;">Total Credits Earned: {{ data.total_credits }}</p>
-        body {
-            /* ... keep your existing styles ... */
-            overscroll-behavior: none; /* Stops the bouncy rubber-band effect at the top and bottom */
-        }
+        <p style="color: #718096; font-size: 16px; font-weight: 600;">Total Credits Earned: {{ data.total_credits }}</p>
+
         {% for sem in data.semesters %}
-        <div class="sem-header">Semester {{ sem.semester }} <span style="float:right; color: #cbd5e0; margin-right: 15px;">SGPA: {{ sem.sgpa }}</span></div>
-        <table>
-            <tr>
-                <th>Subject Code</th>
-                <th>Marks</th>
-                <th>Grade</th>
-                <th>Credits</th>
-            </tr>
-            {% for subject in sem.subjects %}
-            <tr>
-                <td><strong>{{ subject.code }}</strong></td>
-                <td>{{ subject.marks }}</td>
-                <td class="highlight-grade">{{ subject.grade }}</td>
-                <td>{{ subject.credits }}</td>
-            </tr>
-            {% endfor %}
-        </table>
+        <div class="sem-header">
+            Semester {{ sem.semester }} 
+            <span class="sgpa-text">SGPA: {{ sem.sgpa }}</span>
+        </div>
+        <div class="table-container">
+            <table>
+                <tr>
+                    <th>Subject</th>
+                    <th>Marks</th>
+                    <th>Grade</th>
+                    <th>Credits</th>
+                </tr>
+                {% for subject in sem.subjects %}
+                <tr>
+                    <td><strong>{{ subject.code }}</strong></td>
+                    <td>{{ subject.marks }}</td>
+                    <td class="highlight-grade">{{ subject.grade }}</td>
+                    <td>{{ subject.credits }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
         {% endfor %}
 
-        <div class="action-buttons hide-on-pdf" id="buttons-container">
+        <div class="action-buttons" id="buttons-container">
             <a href="/" class="btn">Calculate Another</a>
             <button onclick="downloadPDF()" class="btn btn-pdf">Download as PDF 📄</button>
         </div>
     </div>
 
+    <button onclick="scrollToTop()" id="scrollTopBtn" title="Go to top">⬆️</button>
+
     <script>
+        // PDF Download Logic
         function downloadPDF() {
-            // Temporarily hide the buttons so they don't show up in the downloaded PDF
             document.getElementById('buttons-container').style.display = 'none';
-            
+            document.getElementById('scrollTopBtn').style.display = 'none'; // Hide scroll button in PDF
             const element = document.getElementById('result-card');
             const opt = {
-                margin:       0.5,
-                filename:     'My_VTU_CGPA_Result.pdf',
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true },
-                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+                margin: 0.5, filename: 'VTU_CGPA_Result.pdf', image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
             };
-
-            // Generate PDF and then show the buttons again
             html2pdf().set(opt).from(element).save().then(() => {
                 document.getElementById('buttons-container').style.display = 'flex';
+                document.getElementById('scrollTopBtn').style.display = 'block';
             });
+        }
+
+        // Scroll to Top Logic
+        window.onscroll = function() {scrollFunction()};
+        function scrollFunction() {
+            let scrollBtn = document.getElementById("scrollTopBtn");
+            if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
+                scrollBtn.style.display = "block";
+            } else {
+                scrollBtn.style.display = "none";
+            }
+        }
+        function scrollToTop() {
+            window.scrollTo({top: 0, behavior: 'smooth'});
         }
     </script>
 </body>
 </html>
-
-
-
-
-
