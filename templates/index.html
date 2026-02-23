@@ -3,73 +3,198 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VTU CGPA Pro</title>
+    <title>VTU CGPA AutoGrader</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background-color: #f0f4f8; 
-            margin: 0; 
-            padding: 20px; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            min-height: 100vh; 
+        :root {
+            --primary: #4F46E5;
+            --secondary: #7C3AED;
+            --bg-color: #F3F4F6;
+            --card-bg: #FFFFFF;
+            --text-main: #1F2937;
+            --text-muted: #6B7280;
         }
-        .container { 
-            background: white; 
-            padding: 40px; 
-            border-radius: 15px; 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
-            width: 100%; 
-            max-width: 400px; 
-            text-align: center; 
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
         }
-        .icon-header { font-size: 50px; margin-bottom: 10px; }
-        .main-title { color: #2c3e50; font-size: 24px; margin-top: 0; margin-bottom: 5px; font-weight: 800;}
-        .sub-title { color: #7f8c8d; font-size: 14px; margin-bottom: 30px; }
-        .upload-card { 
-            border: 2px dashed #3498db; 
-            padding: 30px 20px; 
-            border-radius: 10px; 
-            background-color: #ebf5fb; 
-            margin-bottom: 25px; 
+
+        .container {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(79, 70, 229, 0.1);
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.5);
         }
-        .drop-icon { font-size: 40px; }
-        .drop-text { font-weight: bold; color: #2980b9; margin: 10px 0 5px; }
-        .drop-sub { font-size: 12px; color: #5dade2; margin-bottom: 15px; }
-        .submit-btn { 
-            background: #2ecc71; 
-            color: white; 
-            border: none; 
-            padding: 15px 30px; 
-            font-size: 18px; 
-            border-radius: 8px; 
-            cursor: pointer; 
-            width: 100%; 
-            font-weight: bold; 
-            transition: 0.3s; 
-            box-shadow: 0 4px 6px rgba(46, 204, 113, 0.3); 
+
+        .header-icon {
+            font-size: 55px;
+            background: -webkit-linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
         }
-        .submit-btn:hover { background: #27ae60; transform: translateY(-2px); }
-        input[type="file"] { width: 100%; cursor: pointer; }
+
+        .main-title {
+            color: var(--text-main);
+            font-size: 28px;
+            font-weight: 800;
+            margin: 0 0 10px 0;
+            letter-spacing: -0.5px;
+        }
+
+        .sub-title {
+            color: var(--text-muted);
+            font-size: 15px;
+            margin-bottom: 35px;
+            line-height: 1.5;
+        }
+
+        /* Custom File Upload Area */
+        .upload-area {
+            position: relative;
+            border: 2px dashed #C7D2FE;
+            border-radius: 16px;
+            padding: 40px 20px;
+            background-color: #F8FAFC;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary);
+            background-color: #EEF2FF;
+            transform: translateY(-2px);
+        }
+
+        .upload-icon {
+            font-size: 40px;
+            color: #818CF8;
+            margin-bottom: 15px;
+            display: inline-block;
+        }
+
+        .upload-text {
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 16px;
+            margin: 0 0 5px 0;
+        }
+
+        .upload-hint {
+            color: var(--text-muted);
+            font-size: 13px;
+            margin: 0;
+        }
+
+        /* The hidden actual file input */
+        input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            font-size: 18px;
+            border-radius: 12px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(124, 58, 237, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 25px rgba(124, 58, 237, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(1px);
+        }
+
+        #file-name-display {
+            font-size: 14px;
+            color: var(--secondary);
+            font-weight: 600;
+            min-height: 20px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="icon-header">👨‍🎓</div>
-        <h2 class="main-title">VTU CGPA Pro</h2>
-        <p class="sub-title">Upload your PDF results and get a 100% accurate grand total in seconds.</p>
+        <div class="header-icon">
+            <i class="fa-solid fa-graduation-cap"></i>
+        </div>
+        <h2 class="main-title">VTU AutoGrader Pro</h2>
+        <p class="sub-title">Upload your semester PDF results to instantly calculate your SGPA & CGPA.</p>
 
-        <form action="/upload" method="POST" enctype="multipart/form-data">
-            <div class="upload-card">
-                <div class="drop-icon">📄</div>
-                <div class="drop-text">Tap to select PDF files</div>
-                <div class="drop-sub">Select multiple semesters at once</div>
-                <input type="file" name="result_pdfs" accept=".pdf" multiple required>
+        <form action="/upload" method="POST" enctype="multipart/form-data" id="uploadForm">
+            <div class="upload-area">
+                <i class="fa-solid fa-file-pdf upload-icon"></i>
+                <h3 class="upload-text">Tap to select PDFs</h3>
+                <p class="upload-hint">You can select multiple semesters at once</p>
+                
+                <input type="file" name="result_pdfs" accept=".pdf" multiple required id="fileInput">
             </div>
             
-            <button type="submit" class="submit-btn">Calculate Now</button>
+            <div id="file-name-display"></div>
+
+            <button type="submit" class="submit-btn" id="calcBtn">
+                <span>Calculate Result</span>
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+            </button>
         </form>
     </div>
+
+    <script>
+        // Bulletproof Javascript that will never crash the page
+        const fileInput = document.getElementById('fileInput');
+        const fileDisplay = document.getElementById('file-name-display');
+        const calcBtn = document.getElementById('calcBtn');
+        const uploadForm = document.getElementById('uploadForm');
+
+        // Update text when files are selected
+        fileInput.addEventListener('change', function() {
+            if (this.files && this.files.length > 1) {
+                fileDisplay.innerHTML = `<i class="fa-solid fa-check-circle"></i> ${this.files.length} PDFs ready for calculation!`;
+            } else if (this.files && this.files.length === 1) {
+                fileDisplay.innerHTML = `<i class="fa-solid fa-check-circle"></i> ${this.files[0].name}`;
+            } else {
+                fileDisplay.innerHTML = "";
+            }
+        });
+
+        // Show a cool loading spinner when the button is clicked
+        uploadForm.addEventListener('submit', function() {
+            calcBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing PDFs...';
+            calcBtn.style.opacity = '0.8';
+            calcBtn.style.pointerEvents = 'none'; // Prevents double clicking
+        });
+    </script>
 </body>
 </html>
