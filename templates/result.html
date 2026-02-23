@@ -142,9 +142,19 @@
             {% endfor %}
             
         </div>
+        <script>
+    // Hijack the Android System Back Button
+    window.history.pushState(null, "", window.location.href);
+    window.onpopstate = function() {
+        // Force it to go back to the upload page instead of closing the app
+        window.location.replace('/');
+    };
+</script>
+
     
 </body>
 </html>
+
 
 
 
