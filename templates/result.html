@@ -146,46 +146,68 @@
             <button class="btn btn-download" onclick="downloadPDF()">Download PDF</button>
         </div>
     </div>
-
     <script>
-        function downloadPDF() {
-    const element = document.getElementById('pdf-content');
-    
-    // Hide buttons during generation
-    document.getElementById('buttons-container').style.display = 'none';
-    if (document.getElementById('scrollTopBtn')) document.getElementById('scrollTopBtn').style.display = 'none';
+    // 1. The Back Button Function (Restored!)
+    function goBack() {
+        window.location.href = '/';
+    }
 
-    const opt = {
-        margin: 0.5,
-        filename: 'VTU_CGPA_Result.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, letterRendering: true },
-        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-    };
-
-    // Use a specific method to handle Android WebView downloads
-    html2pdf().set(opt).from(element).toPdf().get('pdf').then(function (pdf) {
-        // This converts the PDF to a format Android can't mistake for a simple image
-        const pdfBase64 = pdf.output('datauristring');
-        const win = window.open();
-        if (win) {
-            win.document.write('<iframe src="' + pdfBase64 + '" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>');
-        } else {
-            // If the popup is blocked, fall back to a direct location change
-            location.href = pdfBase64;
+    // 2. The PDF Download Function
+    function downloadPDF() {
+        // Hide buttons temporarily
+        document.getElementById('buttons-container').style.display = 'none';
+        if (document.getElementById('scrollTopBtn')) {
+            document.getElementById('scrollTopBtn').style.display = 'none';
         }
 
-        // Restore buttons
-        setTimeout(() => {
-            document.getElementById('buttons-container').style.display = 'flex';
-            if (document.getElementById('scrollTopBtn')) document.getElementById('scrollTopBtn').style.display = 'block';
-        }, 1000);
-    });
-}
-    </script>
+        // Corrected ID to match your HTML
+        const element = document.getElementById('pdf-content'); 
 
+        const opt = {
+            margin: 0.2,
+            filename: 'VTU_CGPA_Result.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+            jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+        };
+
+        // Generate the PDF
+        html2pdf().set(opt).from(element).output('blob').then(function(pdfBlob) {
+            
+            // Try to use the Native Android Share Menu first (Bypasses Wrapper App bugs)
+            const file = new File([pdfBlob], 'VTU_CGPA_Result.pdf', { type: 'application/pdf' });
+            
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                navigator.share({
+                    title: 'VTU CGPA Result',
+                    files: [file]
+                }).then(restoreButtons).catch(restoreButtons);
+            } else {
+                // Fallback for PC or normal browsers
+                const url = window.URL.createObjectURL(pdfBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'VTU_CGPA_Result.pdf';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                restoreButtons();
+            }
+        });
+    }
+
+    // 3. Helper to bring buttons back
+    function restoreButtons() {
+        document.getElementById('buttons-container').style.display = 'flex';
+        if (document.getElementById('scrollTopBtn')) {
+            document.getElementById('scrollTopBtn').style.display = 'block';
+        }
+    }
+</script>
+    
 </body>
 </html>
+
 
 
 
