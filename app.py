@@ -124,6 +124,9 @@ def process_pdf(files):
         "total_credits": overall_credits,
         "semesters": semesters_data
     }
+@app.route('/')
+def home():
+    return render_template('index.html')
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -143,14 +146,13 @@ def upload_file():
         return render_template('error.html', error_msg=result_data['error'])
 
     return render_template('result.html', data=result_data)
-
-@app.route('/feedback', methods=['POST'])
-def feedback():
-    user_issue = request.form.get('issue_text')
+    
+    @app.route('/feedback', methods=['POST'])
+    def feedback():
+        user_issue = request.form.get('issue_text')
     # This prints directly to your Render Logs so you can read it!
     print(f"\n🚨 NEW BUG REPORT RECEIVED: {user_issue}\n", flush=True)
     return render_template('error.html', error_msg="Thank you! Your feedback has been sent to the developer.", success=True)
-
-if __name__ == '__main__':
-    app.run(debug=True)
-
+    
+    if __name__ == '__main__':
+        app.run(debug=True)
