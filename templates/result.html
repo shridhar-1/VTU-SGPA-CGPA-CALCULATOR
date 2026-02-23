@@ -141,72 +141,11 @@
             </div>
             {% endfor %}
             
-        </div> <div class="btn-container" id="action-buttons">
-            <a href="/" class="btn btn-back">Go Back</a>
-            <button class="btn btn-download" onclick="downloadPDF()">Download PDF</button>
         </div>
-    </div>
-    <script>
-    // 1. The Back Button Function (Restored!)
-    function goBack() {
-        window.location.href = '/';
-    }
-
-    // 2. The PDF Download Function
-    function downloadPDF() {
-        // Hide buttons temporarily
-        document.getElementById('buttons-container').style.display = 'none';
-        if (document.getElementById('scrollTopBtn')) {
-            document.getElementById('scrollTopBtn').style.display = 'none';
-        }
-
-        // Corrected ID to match your HTML
-        const element = document.getElementById('pdf-content'); 
-
-        const opt = {
-            margin: 0.2,
-            filename: 'VTU_CGPA_Result.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true, letterRendering: true },
-            jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-        };
-
-        // Generate the PDF
-        html2pdf().set(opt).from(element).output('blob').then(function(pdfBlob) {
-            
-            // Try to use the Native Android Share Menu first (Bypasses Wrapper App bugs)
-            const file = new File([pdfBlob], 'VTU_CGPA_Result.pdf', { type: 'application/pdf' });
-            
-            if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                navigator.share({
-                    title: 'VTU CGPA Result',
-                    files: [file]
-                }).then(restoreButtons).catch(restoreButtons);
-            } else {
-                // Fallback for PC or normal browsers
-                const url = window.URL.createObjectURL(pdfBlob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = 'VTU_CGPA_Result.pdf';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                restoreButtons();
-            }
-        });
-    }
-
-    // 3. Helper to bring buttons back
-    function restoreButtons() {
-        document.getElementById('buttons-container').style.display = 'flex';
-        if (document.getElementById('scrollTopBtn')) {
-            document.getElementById('scrollTopBtn').style.display = 'block';
-        }
-    }
-</script>
     
 </body>
 </html>
+
 
 
 
