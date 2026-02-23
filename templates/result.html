@@ -164,25 +164,31 @@
             };
 
             // 3. The exact Android Bypass you wrote earlier
-            html2pdf().set(opt).from(element).output('blob').then(function(pdfBlob) {
-                const blobUrl = window.URL.createObjectURL(pdfBlob);
-                const link = document.createElement('a');
-                link.style.display = 'none';
-                link.href = blobUrl;
-                link.download = opt.filename;
-                
-                document.body.appendChild(link);
-                link.click();
-                
-                // 4. Clean up and bring buttons back
-                setTimeout(() => {
-                    document.body.removeChild(link);
-                    window.URL.revokeObjectURL(blobUrl);
-                    document.getElementById('action-buttons').style.display = 'flex';
-                }, 200);
-            });
+           // Convert Blob to Base64 to completely bypass Android/WhatsApp Download Manager bugs
+    html2pdf().set(opt).from(element).output('blob').then(function(pdfBlob) {
+        const reader = new FileReader();
+        reader.readAsDataURL(pdfBlob);
+        reader.onloadend = function() {
+            const base64data = reader.result;
+            const link = document.createElement('a');
+            link.style.display = 'none';
+            link.href = base64data;
+            link.download = 'VTU_CGPA_' + Math.floor(Date.now() / 1000) + '.pdf';
+            
+            document.body.appendChild(link);
+            link.click();
+            
+            // Cleanup and bring buttons back
+            setTimeout(() => {
+                document.body.removeChild(link);
+                document.getElementById('buttons-container').style.display = 'flex';
+                document.getElementById('scrollTopBtn').style.display = 'block';
+            }, 200);
+        };
+    });;
         }
     </script>
 
 </body>
 </html>
+
