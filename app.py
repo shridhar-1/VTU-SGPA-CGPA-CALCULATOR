@@ -90,6 +90,6 @@ def feedback():
     return render_template('error.html', error_msg="Thank you! Feedback received.", success=True)
 
 if __name__ == '__main__':
-    # Critical for Render: Listen on the assigned port
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=False)
+    # Force Python to use the exact port Render is asking for (10000)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host='0.0.0.0', port=port)
