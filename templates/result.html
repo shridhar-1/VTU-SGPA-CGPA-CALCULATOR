@@ -149,41 +149,44 @@
 
     <script>
         function downloadPDF() {
-            // 1. Hide the buttons temporarily just in case
-            document.getElementById('action-buttons').style.display = 'none';
-
-            const element = document.getElementById('pdf-content');
-            
-            // 2. Format specifically for an A4 page without breaking the CSS
-            const opt = {
-                margin: 0.2,
-                filename: 'VTU_CGPA_' + Math.floor(Date.now() / 1000) + '.pdf',
-                image: { type: 'jpeg', quality: 1.0 },
-                html2canvas: { scale: 2, useCORS: true, letterRendering: true },
-                jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-            };
-
-            // 3. The exact Android Bypass you wrote earlier
-           // Convert Blob to Base64 to completely bypass Android/WhatsApp Download Manager bugs
-    // Convert to Blob and use Android Native Share Menu!
-    // Hide buttons so they don't show up in the PDF
+    const element = document.getElementById('result-content');
+    
+    // Hide buttons during generation
     document.getElementById('buttons-container').style.display = 'none';
     if (document.getElementById('scrollTopBtn')) document.getElementById('scrollTopBtn').style.display = 'none';
 
-    // Trigger the official Android Print-to-PDF system!
-    window.print();
+    const opt = {
+        margin: 0.5,
+        filename: 'VTU_CGPA_Result.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+    };
 
-    // Bring the buttons back after 2 seconds
-    setTimeout(() => {
-        document.getElementById('buttons-container').style.display = 'flex';
-        if (document.getElementById('scrollTopBtn')) document.getElementById('scrollTopBtn').style.display = 'block';
-    }, 2000);
-    });
+    // Use a specific method to handle Android WebView downloads
+    html2pdf().set(opt).from(element).toPdf().get('pdf').then(function (pdf) {
+        // This converts the PDF to a format Android can't mistake for a simple image
+        const pdfBase64 = pdf.output('datauristring');
+        const win = window.open();
+        if (win) {
+            win.document.write('<iframe src="' + pdfBase64 + '" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>');
+        } else {
+            // If the popup is blocked, fall back to a direct location change
+            location.href = pdfBase64;
         }
+
+        // Restore buttons
+        setTimeout(() => {
+            document.getElementById('buttons-container').style.display = 'flex';
+            if (document.getElementById('scrollTopBtn')) document.getElementById('scrollTopBtn').style.display = 'block';
+        }, 1000);
+    });
+}
     </script>
 
 </body>
 </html>
+
 
 
 
