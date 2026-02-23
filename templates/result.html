@@ -166,44 +166,24 @@
             // 3. The exact Android Bypass you wrote earlier
            // Convert Blob to Base64 to completely bypass Android/WhatsApp Download Manager bugs
     // Convert to Blob and use Android Native Share Menu!
-    html2pdf().set(opt).from(element).output('blob').then(function(pdfBlob) {
-        
-        // Create a proper File object from the PDF Blob
-        const file = new File([pdfBlob], 'VTU_CGPA_' + Math.floor(Date.now() / 1000) + '.pdf', { type: 'application/pdf' });
-        
-        // Check if the mobile app supports the Native Android Share Menu
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-            navigator.share({
-                title: 'VTU CGPA Result',
-                text: 'Here is the calculated VTU result!',
-                files: [file]
-            }).then(() => {
-                // Cleanup and bring buttons back after sharing
-                document.getElementById('buttons-container').style.display = 'flex';
-                document.getElementById('scrollTopBtn').style.display = 'block';
-            }).catch((error) => console.log('Share failed:', error));
-        } else {
-            // Fallback: If they are on a PC laptop, do a normal fast download
-            const blobUrl = window.URL.createObjectURL(pdfBlob);
-            const link = document.createElement('a');
-            link.style.display = 'none';
-            link.href = blobUrl;
-            link.download = file.name;
-            document.body.appendChild(link);
-            link.click();
-            
-            setTimeout(() => {
-                document.body.removeChild(link);
-                window.URL.revokeObjectURL(blobUrl);
-                document.getElementById('buttons-container').style.display = 'flex';
-                document.getElementById('scrollTopBtn').style.display = 'block';
-            }, 200);
-        }
+    // Hide buttons so they don't show up in the PDF
+    document.getElementById('buttons-container').style.display = 'none';
+    if (document.getElementById('scrollTopBtn')) document.getElementById('scrollTopBtn').style.display = 'none';
+
+    // Trigger the official Android Print-to-PDF system!
+    window.print();
+
+    // Bring the buttons back after 2 seconds
+    setTimeout(() => {
+        document.getElementById('buttons-container').style.display = 'flex';
+        if (document.getElementById('scrollTopBtn')) document.getElementById('scrollTopBtn').style.display = 'block';
+    }, 2000);
     });
         }
     </script>
 
 </body>
 </html>
+
 
 
