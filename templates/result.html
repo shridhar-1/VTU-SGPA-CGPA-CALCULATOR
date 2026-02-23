@@ -178,16 +178,19 @@
     </div>
 
     <script>
-        // 1. Push a "fake" history state into the Android phone's memory immediately
-        window.history.pushState({ page: "dummy" }, null, window.location.href);
+        // 1. Instantly add a "#loaded" hash to the URL when the result page opens.
+        // Android is forced to log this in its history stack.
+        window.location.hash = "loaded";
 
-        // 2. When the physical back button is pressed, it triggers this instead of exiting
-        window.addEventListener("popstate", function(event) {
-            // Forcefully redirect the user to the fresh home page
-            window.location.replace("/"); 
-        });
+        // 2. When the user hits the physical back button, it deletes the hash instead of exiting.
+        // We catch that deletion and teleport them to the home page!
+        window.onhashchange = function() {
+            if (!window.location.hash) {
+                window.location.replace("/");
+            }
+        };
     </script>
-</body>
 </html>
+
 
 
