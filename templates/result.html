@@ -178,14 +178,16 @@
     </div>
 
     <script>
-        // 1. Erase the "File Upload" from the phone's back-button memory
-        window.history.replaceState(null, null, window.location.href);
-        
-        // 2. When the physical back button is pressed, teleport smoothly to Home
+        // 1. Push a "fake" history state into the Android phone's memory immediately
+        window.history.pushState({ page: "dummy" }, null, window.location.href);
+
+        // 2. When the physical back button is pressed, it triggers this instead of exiting
         window.addEventListener("popstate", function(event) {
-            window.location.replace('/');
+            // Forcefully redirect the user to the fresh home page
+            window.location.replace("/"); 
         });
     </script>
 </body>
 </html>
+
 
