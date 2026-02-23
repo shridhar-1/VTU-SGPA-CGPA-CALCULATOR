@@ -154,5 +154,11 @@ def upload_file():
     print(f"\n🚨 NEW BUG REPORT RECEIVED: {user_issue}\n", flush=True)
     return render_template('error.html', error_msg="Thank you! Your feedback has been sent to the developer.", success=True)
     
+    import os
+    
     if __name__ == '__main__':
-        app.run(debug=True)
+    # Grab the port Render gives us, or default to 5000
+    port = int(os.environ.get('PORT', 5000))
+    # Force Python to broadcast to the entire internet!
+    app.run(host='0.0.0.0', port=port, debug=False)
+
