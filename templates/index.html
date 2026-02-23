@@ -154,12 +154,6 @@
             }, 1500);
         });
 
-        // 2. Back Button Trap
-        window.history.pushState({ noExit: true }, "");
-        window.addEventListener("popstate", function(event) {
-            window.history.pushState({ noExit: true }, ""); 
-        });
-
         // 3. The Secret File Bundler (DataTransfer)
         const dt = new DataTransfer(); 
         const dummyInput = document.getElementById('dummyInput');
@@ -211,3 +205,4 @@
     </script>
 </body>
 </html>
+
