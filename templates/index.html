@@ -124,28 +124,25 @@
             <button type="submit" class="submit-btn" id="calc-btn">Calculate Now</button>
         </form>
     </div>
+    
+    <form action="/upload" method="POST" enctype="multipart/form-data" onsubmit="showLoading()">
+    
+    <input type="file" name="result_pdfs" multiple accept=".pdf" required>
+    
+    <button type="submit" id="uploadBtn" class="btn">Calculate CGPA</button>
 
-    <script>
-        // Removes the splash screen after exactly 1.5 seconds
-        window.addEventListener('load', function() {
-            setTimeout(function() {
-                const splash = document.getElementById('splash-screen');
-                splash.style.opacity = '0';
-                splash.style.visibility = 'hidden';
-            }, 1500);
-        });
+</form>
 
-        // Updates file name text
-        function updateFileName(input) {
-            const fileNameDiv = document.getElementById('file-name');
-            if (input.files.length === 1) {
-                fileNameDiv.innerText = "✅ Selected: " + input.files[0].name;
-            } else if (input.files.length > 1) {
-                fileNameDiv.innerText = "✅ " + input.files.length + " files selected and ready!";
-            } else {
-                fileNameDiv.innerText = "";
-            }
-        }
-    </script>
+<script>
+    function showLoading() {
+        const btn = document.getElementById('uploadBtn');
+        btn.innerHTML = 'Calculating... Please wait ⏳';
+        btn.style.opacity = '0.7';
+        // Wait 10 milliseconds before disabling so the form has time to submit!
+        setTimeout(() => { btn.disabled = true; }, 10);
+    }
+</script>
+
 </body>
 </html>
+
