@@ -178,11 +178,14 @@
     </div>
 
     <script>
-        // If the user hits the physical Android back button, seamlessly return to the upload screen!
-        window.history.pushState({ page: 'result' }, "", "");
+        // 1. Erase the "File Upload" from the phone's back-button memory
+        window.history.replaceState(null, null, window.location.href);
+        
+        // 2. When the physical back button is pressed, teleport smoothly to Home
         window.addEventListener("popstate", function(event) {
-            window.location.href = '/';
+            window.location.replace('/');
         });
     </script>
 </body>
 </html>
+
