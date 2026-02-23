@@ -3,44 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>VTU CGPA AutoGrader Pro</title>
+    <title>VTU AutoGrader</title>
     
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
     <style>
-        /* Premium Dark Theme matched exactly to your uploaded image */
+        /* VTU SYNC THEME - CLEAN LIGHT MODE */
         :root {
-            --bg-deep: #0B0F19;      /* Deepest black/blue */
-            --card-bg: #151C2C;      /* Slightly lighter panel */
-            --primary-blue: #3B82F6; /* Neon Blue */
-            --blue-glow: rgba(59, 130, 246, 0.4);
-            --text-main: #FFFFFF;
-            --text-muted: #8B949E;
-            --border-color: #2D3748;
+            --bg-color: #FFFFFF;
+            --text-dark: #111827;
+            --text-grey: #6B7280;
+            --primary-accent: #EF4444; /* That reddish/orange from your screenshot */
+            --card-bg: #F9FAFB;
+            --border-color: #E5E7EB;
         }
 
-        /* Stop pull-to-refresh and lock to full screen */
-        html, body {
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
             margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            background-color: var(--bg-deep);
-            color: var(--text-main);
-            font-family: 'Inter', -apple-system, sans-serif;
-            overflow: hidden; /* Kills pull-down refresh completely */
-            overscroll-behavior-y: none; /* Kills browser bouncing */
+            padding: 20px;
+            height: 100vh;
             display: flex;
+            flex-direction: column;
             justify-content: center;
-            align-items: center;
+            overflow: hidden; /* No pull-to-refresh */
+            overscroll-behavior-y: none;
         }
 
-        /* The Rocket Splash Screen */
+        /* --- THE ROCKET SPLASH SCREEN --- */
         #splash-screen {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background-color: var(--bg-deep);
+            background-color: #FFFFFF;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -50,175 +47,239 @@
         }
 
         .rocket-icon {
-            font-size: 70px;
-            color: var(--primary-blue);
-            filter: drop-shadow(0 0 15px var(--blue-glow));
-            animation: fly 1.5s infinite alternate ease-in-out;
-            margin-bottom: 20px;
-            display: inline-block;
+            font-size: 80px;
+            background: linear-gradient(135deg, #FF512F, #DD2476);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            /* The Animation Fix! */
+            display: inline-block; 
+            animation: fly 1.2s infinite alternate ease-in-out;
+            margin-bottom: 15px;
         }
 
         @keyframes fly {
-            0% { transform: translateY(0px) scale(1); }
-            100% { transform: translateY(-20px) scale(1.05); }
+            0% { transform: translateY(0px) rotate(0deg); }
+            100% { transform: translateY(-20px) rotate(5deg); }
         }
 
         .splash-text {
             font-size: 24px;
             font-weight: 800;
-            letter-spacing: 2px;
-            color: var(--text-main);
+            color: var(--text-dark);
+            letter-spacing: -0.5px;
         }
 
-        /* Main App Container */
+        /* --- MAIN APP INTERFACE --- */
         .container {
-            background: var(--card-bg);
-            padding: 40px 30px;
-            border-radius: 20px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
-            width: 90%;
+            width: 100%;
             max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .header-section {
+            margin-bottom: 30px;
+        }
+
+        .greeting {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .sub-greeting {
+            font-size: 16px;
+            color: var(--text-grey);
+            font-weight: 500;
+            margin-top: 8px;
+        }
+
+        /* The Hero Card (Orange Gradient like your screenshot) */
+        .hero-card {
+            background: linear-gradient(135deg, #FF6B6B, #EE5253);
+            border-radius: 20px;
+            padding: 30px;
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 25px rgba(238, 82, 83, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Decorative circle behind hero text */
+        .hero-card::before {
+            content: '';
+            position: absolute;
+            top: -20px; right: -20px;
+            width: 100px; height: 100px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+        }
+
+        .hero-title {
+            font-size: 24px;
+            font-weight: 800;
+            margin: 0 0 5px 0;
+        }
+
+        .hero-desc {
+            font-size: 14px;
+            opacity: 0.9;
+            margin: 0;
+        }
+
+        /* Upload Area */
+        .upload-card {
+            background-color: var(--card-bg);
+            border: 2px dashed var(--border-color);
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+            transition: 0.3s;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .upload-card:active {
+            border-color: var(--primary-accent);
+            background-color: #FEF2F2;
+        }
+
+        .icon-3d {
+            font-size: 40px;
+            margin-bottom: 10px;
+            display: inline-block;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+        }
+
+        .upload-text {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin: 5px 0;
+        }
+
+        .upload-sub {
+            font-size: 13px;
+            color: var(--text-grey);
+            margin: 0;
+        }
+
+        /* File Input Hidden */
+        input[type="file"] {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+            opacity: 0;
+        }
+
+        #file-name {
+            min-height: 20px;
+            font-size: 14px;
+            color: var(--primary-accent);
+            font-weight: 700;
+            margin-top: 10px;
             text-align: center;
         }
 
-        .header-icon {
-            font-size: 50px;
-            color: var(--primary-blue);
-            margin-bottom: 10px;
-            filter: drop-shadow(0 0 10px var(--blue-glow));
-        }
-
-        .main-title { font-size: 26px; font-weight: 800; margin: 0 0 8px 0; }
-        .sub-title { color: var(--text-muted); font-size: 14px; margin-bottom: 30px; line-height: 1.4; }
-
-        /* The Drop Zone */
-        .upload-area {
-            position: relative;
-            border: 2px dashed var(--border-color);
-            border-radius: 16px;
-            padding: 35px 20px;
-            background-color: rgba(11, 15, 25, 0.5);
-            transition: all 0.3s ease;
-            margin-bottom: 20px;
-        }
-
-        .upload-area:active, .upload-area.active {
-            border-color: var(--primary-blue);
-            background-color: rgba(59, 130, 246, 0.1);
-        }
-
-        .upload-icon { font-size: 35px; color: var(--text-muted); margin-bottom: 10px; }
-        .upload-text { font-weight: 600; font-size: 16px; color: var(--text-main); margin: 0 0 5px 0; }
-        .upload-hint { color: var(--text-muted); font-size: 12px; margin: 0; }
-
-        input[type="file"] {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            opacity: 0; cursor: pointer;
-        }
-
-        #file-name-display {
-            font-size: 13px; color: var(--primary-blue); font-weight: 600;
-            min-height: 20px; margin-bottom: 10px;
-        }
-
-        /* Neon Button */
-        .submit-btn {
-            background: var(--primary-blue);
-            color: #fff;
-            border: none;
-            padding: 16px 0;
-            font-size: 16px;
-            border-radius: 12px;
-            cursor: pointer;
+        /* Big Action Button */
+        .calc-btn {
+            background-color: var(--text-dark);
+            color: white;
             width: 100%;
+            padding: 18px;
+            border-radius: 14px;
+            border: none;
+            font-size: 16px;
             font-weight: 700;
-            box-shadow: 0 0 15px var(--blue-glow);
-            display: flex; justify-content: center; align-items: center; gap: 10px;
-            transition: 0.2s;
+            margin-top: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        
+        .calc-btn:active {
+            transform: scale(0.98);
         }
 
-        .submit-btn:active { transform: scale(0.96); box-shadow: 0 0 5px var(--blue-glow); }
     </style>
 </head>
 <body>
 
     <div id="splash-screen">
-       <i class="fa-solid fa-rocket rocket-icon"></i>
-        <div class="splash-text">VTU PRO</div>
+        <i class="fa-solid fa-rocket rocket-icon"></i>
+        <div class="splash-text">VTU AutoGrader</div>
     </div>
 
     <div class="container">
-        <div class="header-icon"><i class="fa-solid fa-shield-halved"></i></div>
-        <h2 class="main-title">AutoGrader</h2>
-        <p class="sub-title">Upload your PDF results. Secure, dark, and instantaneous.</p>
+        
+        <div class="header-section">
+            <h1 class="greeting">Hello, VTU Student! 👋</h1>
+            <p class="sub-greeting">Let's calculate your results.</p>
+        </div>
+
+        <div class="hero-card">
+            <h2 class="hero-title">Result Analysis</h2>
+            <p class="hero-desc">100% Accurate SGPA & CGPA</p>
+        </div>
 
         <form action="/upload" method="POST" enctype="multipart/form-data" id="uploadForm">
-            <div class="upload-area" id="drop-zone">
-                <i class="fa-regular fa-folder-open upload-icon" id="up-icon"></i>
-                <h3 class="upload-text" id="up-text">Tap to select PDFs</h3>
-                <p class="upload-hint">Select all semesters at once</p>
+            <div class="upload-card" id="drop-zone">
+                <div class="icon-3d">📄</div>
+                <h3 class="upload-text">Upload PDF Result</h3>
+                <p class="upload-sub">Tap to select your files</p>
                 <input type="file" name="result_pdfs" accept=".pdf" multiple required id="fileInput">
             </div>
-            
-            <div id="file-name-display"></div>
 
-            <button type="submit" class="submit-btn" id="calcBtn">
-                <span>Calculate Result</span> <i class="fa-solid fa-bolt"></i>
+            <div id="file-name"></div>
+
+            <button type="submit" class="calc-btn" id="submitBtn">
+                Calculate Now
             </button>
         </form>
+
     </div>
 
     <script>
-        // 1. Splash Screen Logic
+        // 1. Rocket Animation Logic
         window.addEventListener('load', () => {
             setTimeout(() => {
                 const splash = document.getElementById('splash-screen');
                 splash.style.opacity = '0';
-                setTimeout(() => { splash.style.visibility = 'hidden'; }, 600);
-            }, 1800); // Rocket flies for 1.8 seconds
+                setTimeout(() => { 
+                    splash.style.visibility = 'hidden'; 
+                }, 600);
+            }, 2000); // 2 seconds of rocket flying
         });
 
-        // 2. The Android "Back Button" Trap!
-        // This injects a fake history state so the phone thinks there is a previous page.
-        // When you hit the Android back button, it stays in the app instead of closing!
+        // 2. Android Back Button Trap (Keeps user in app)
         window.history.pushState({ noExit: true }, "");
         window.addEventListener("popstate", function(event) {
             window.history.pushState({ noExit: true }, ""); 
-            // The user is trapped securely on the home screen!
         });
 
-        // 3. Smooth UI Updates
+        // 3. UI Interactions
         const fileInput = document.getElementById('fileInput');
-        const fileDisplay = document.getElementById('file-name-display');
-        const calcBtn = document.getElementById('calcBtn');
+        const fileNameDisplay = document.getElementById('file-name');
+        const submitBtn = document.getElementById('submitBtn');
         const dropZone = document.getElementById('drop-zone');
-        const upIcon = document.getElementById('up-icon');
-        const upText = document.getElementById('up-text');
 
         fileInput.addEventListener('change', function() {
             if (this.files && this.files.length > 0) {
-                dropZone.style.borderColor = "var(--primary-blue)";
-                upIcon.className = "fa-solid fa-file-circle-check upload-icon";
-                upIcon.style.color = "var(--primary-blue)";
-                upText.innerText = "Files Selected!";
-                
-                if (this.files.length > 1) {
-                    fileDisplay.innerHTML = `<i class="fa-solid fa-check"></i> ${this.files.length} PDFs ready!`;
+                dropZone.style.borderColor = "#EF4444";
+                dropZone.style.backgroundColor = "#FEF2F2";
+                if(this.files.length === 1) {
+                    fileNameDisplay.textContent = "Selected: " + this.files[0].name;
                 } else {
-                    fileDisplay.innerHTML = `<i class="fa-solid fa-check"></i> ${this.files[0].name}`;
+                    fileNameDisplay.textContent = "Selected: " + this.files.length + " PDFs";
                 }
-            } else {
-                fileDisplay.innerHTML = "";
             }
         });
 
-        uploadForm.addEventListener('submit', function() {
-            calcBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Processing...';
-            calcBtn.style.opacity = '0.7';
-            calcBtn.style.pointerEvents = 'none';
+        document.getElementById('uploadForm').addEventListener('submit', function() {
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
+            submitBtn.style.opacity = '0.7';
         });
     </script>
 </body>
 </html>
-
