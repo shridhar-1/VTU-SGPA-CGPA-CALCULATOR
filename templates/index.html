@@ -124,15 +124,6 @@
             <button type="submit" class="submit-btn" id="calc-btn">Calculate Now</button>
         </form>
     </div>
-    
-    <form action="/upload" method="POST" enctype="multipart/form-data" onsubmit="showLoading()">
-    
-    <input type="file" name="result_pdfs" multiple accept=".pdf" required>
-    
-    <button type="submit" id="uploadBtn" class="btn">Calculate CGPA</button>
-
-</form>
-
 <script>
     function showLoading() {
         const btn = document.getElementById('uploadBtn');
@@ -145,4 +136,5 @@
 
 </body>
 </html>
+
 
