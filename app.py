@@ -58,7 +58,6 @@ GENERIC_CODES = {
 for branch in BRANCHES:
     for suffix, credits in GENERIC_CODES.items():
         CREDIT_MAP[f"B{branch}{suffix}"] = credits
-ṛ
     
 
 def calculate_vtu_grade(marks, p_f):
@@ -169,5 +168,6 @@ def upload():
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
 
 
