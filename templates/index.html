@@ -144,7 +144,7 @@
         </button>
     </form>
 
-    <script>
+        <script>
         // 1. Rocket Animation
         window.addEventListener('load', () => {
             setTimeout(() => {
@@ -189,14 +189,21 @@
             }
         }
 
-        // 3. THE ULTIMATE WEBVIEW BACK-BUTTON FIX (Fetch API)
+        // 3. THE ULTIMATE WEBVIEW BACK-BUTTON FIX (Fetch API with Manual Packing)
         uploadForm.addEventListener('submit', async function(e) {
             e.preventDefault(); // STOP the normal form submission!
 
+            // Prevent user from clicking multiple times
+            submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Calculating...';
             submitBtn.style.opacity = '0.7';
 
-            const formData = new FormData(this);
+            // 💥 THE FIX: We manually pack the DataTransfer files into the FormData
+            // so the Android WebView cannot ignore them!
+            const formData = new FormData();
+            for (let i = 0; i < dt.files.length; i++) {
+                formData.append('result_pdfs', dt.files[i]);
+            }
 
             try {
                 // Send PDFs to Python silently in the background
@@ -216,14 +223,16 @@
                     document.write(resultHTML);
                     document.close();
                 } else {
-                    alert("Calculation Error! Please check your PDFs.");
+                    alert("Server Error! The PDFs were not readable or Python crashed.");
                     submitBtn.innerHTML = 'Calculate Result';
                     submitBtn.style.opacity = '1';
+                    submitBtn.disabled = false;
                 }
             } catch (error) {
-                alert("Network Error! Make sure you are connected to the internet.");
+                alert("Network Error! Check your internet connection.");
                 submitBtn.innerHTML = 'Calculate Result';
                 submitBtn.style.opacity = '1';
+                submitBtn.disabled = false;
             }
         });
 
@@ -236,7 +245,9 @@
             }
         });
     </script>
+
 </body>
 </html>
+
 
 
