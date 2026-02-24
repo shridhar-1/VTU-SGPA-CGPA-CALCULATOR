@@ -154,7 +154,7 @@
             }, 1500);
         });
 
-        // 3. The Secret File Bundler (DataTransfer)
+        // 2. The Secret File Bundler (DataTransfer)
         const dt = new DataTransfer(); 
         const dummyInput = document.getElementById('dummyInput');
         const realInput = document.getElementById('realInput');
@@ -162,26 +162,17 @@
         const dropZone = document.getElementById('drop-zone');
         const addMoreBtn = document.getElementById('addMoreBtn');
         const submitBtn = document.getElementById('submitBtn');
+        const uploadForm = document.getElementById('uploadForm');
 
         dummyInput.addEventListener('change', function() {
             if (this.files && this.files.length > 0) {
-                
-                // Add new files to our secret bundle
                 for (let i = 0; i < this.files.length; i++) {
                     dt.items.add(this.files[i]);
                 }
-                
-                // Copy the bundle to the real form input
                 realInput.files = dt.files;
-
-                // Update the UI List
                 updateFileListUI();
-
-                // Hide the big drop zone, show the "+ Add More" button
                 dropZone.style.display = 'none';
                 addMoreBtn.style.display = 'block';
-                
-                // Enable the Calculate button
                 submitBtn.disabled = false;
             }
         });
@@ -198,11 +189,54 @@
             }
         }
 
-        document.getElementById('uploadForm').addEventListener('submit', function() {
+        // 3. THE ULTIMATE WEBVIEW BACK-BUTTON FIX (Fetch API)
+        uploadForm.addEventListener('submit', async function(e) {
+            e.preventDefault(); // STOP the normal form submission!
+
             submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Calculating...';
             submitBtn.style.opacity = '0.7';
+
+            const formData = new FormData(this);
+
+            try {
+                // Send PDFs to Python silently in the background
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const resultHTML = await response.text();
+
+                    // Trick the Android phone by adding a fake "#result" to the history
+                    window.history.pushState({ page: 'result' }, "", "#result");
+
+                    // Instantly overwrite the screen with the new Result page
+                    document.open();
+                    document.write(resultHTML);
+                    document.close();
+                } else {
+                    alert("Calculation Error! Please check your PDFs.");
+                    submitBtn.innerHTML = 'Calculate Result';
+                    submitBtn.style.opacity = '1';
+                }
+            } catch (error) {
+                alert("Network Error! Make sure you are connected to the internet.");
+                submitBtn.innerHTML = 'Calculate Result';
+                submitBtn.style.opacity = '1';
+            }
+        });
+
+        // 4. Catch the physical Android Back Button!
+        window.addEventListener("popstate", function(event) {
+            // If the user hits back, the "#result" hash gets removed.
+            if (window.location.hash !== "#result") {
+                // Reload the app perfectly back to the clean upload screen!
+                window.location.reload();
+            }
         });
     </script>
 </body>
 </html>
+
 
