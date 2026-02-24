@@ -8,42 +8,58 @@ app = Flask(__name__)
 # 💥 The Bulletproof Dictionary: 100% Accurate for ECE!
 # Add 5th to 8th sem here later by just following the 
 # Master VTU Credit Dictionary (1st to 8th Sem ECE - 2022 Scheme)
-CREDIT_MAP = {
-    # 1st Semester
-    "BMATE101": 4, "BCHEE102": 4, "BCEDK103": 3, "BENGK106": 1,
-    "BICOK107": 1, "BIDTK158": 1, "BESCK104E": 3, "BETCK105J": 3,
-    
-    # 2nd Semester
-    "BMATE201": 4, "BPHYE202": 4, "BBEE203": 3, "BPWSK206": 1,
-    "BKSKK207": 1, "BSFHK258": 1, "BPLCK205B": 3, "BESCK204B": 3,
-    
-    # 3rd Semester ECE
-    "BMATE301": 4, "BEC302": 4, "BEC303": 3, "BEC304": 3, "BECL305": 1,
-    "BSCK306B": 1, "BKSKK307": 1, "BNSAK358": 1,
-    
-    # 4th Semester ECE 
-    "BEC401": 3, "BEC402": 4, "BEC403": 3, "BEC404": 3, "BECL405": 1,
-    "BUHVK406": 1, "BKSKK407": 1, "BBOK408": 1, "BAECK409": 1,
+import string # Add this at the top with your other imports!
 
-    # 5th Semester ECE
-    "BEC501": 3, "BEC502": 4, "BEC503": 3, "BEC504": 3, "BECL505": 1,
-    "BEC506A": 3, "BEC506B": 3, "BEC506C": 3, "BEC506D": 3, 
-    "BKSKK507": 1, "BAECK508": 1,
-    
-    # 6th Semester ECE
-    "BEC601": 3, "BEC602": 4, "BEC603": 3, "BECL604": 1, 
-    "BEC605A": 3, "BEC605B": 3, "BEC605C": 3, "BEC605D": 3,
-    "BEC606A": 3, "BEC606B": 3, "BEC606C": 3, "BEC606D": 3,
-    "BAECK608": 1,
-    
-    # 7th Semester ECE
-    "BEC701": 3, "BEC702": 3, "BEC703": 3, 
-    "BEC704A": 3, "BEC704B": 3, "BEC704C": 3, "BEC704D": 3, 
-    "BEC705A": 3, "BEC705B": 3, "BEC705C": 3, "BEC705D": 3,
-    
-    # 8th Semester ECE (Major Project / Internship)
-    "BEC801": 1, "BEC802": 1, "BEC803": 8, "BEC804": 1
+# 💥 1. The Common Subjects (Never Change)
+CREDIT_MAP = {
+    "BCEDK103": 3, "BENGK106": 1, "BICOK107": 1, "BIDTK158": 1,
+    "BBEE203": 3, "BPWSK206": 1, "BKSKK207": 1, "BSFHK258": 1,
+    "BMATE301": 4, "BKSKK307": 1, "BNSAK358": 1, "BSCK306B": 1,
+    "BUHVK406": 1, "BKSKK407": 1, "BBOK408": 1, "BAECK409": 1,
+    "BKSKK507": 1, "BAECK508": 1, "BAECK608": 1
 }
+
+# 💥 2. First Year Stream Codes (Maths, Physics, Chem)
+# E=ECE/EE, S=CS/IS, M=Mech, V=Civil, C=Chemical
+for stream in ["E", "S", "M", "V", "C"]:
+    CREDIT_MAP[f"BMAT{stream}101"] = 4
+    CREDIT_MAP[f"BPHY{stream}102"] = 4
+    CREDIT_MAP[f"BCHE{stream}102"] = 4
+    CREDIT_MAP[f"BMAT{stream}201"] = 4
+    CREDIT_MAP[f"BPHY{stream}202"] = 4
+    CREDIT_MAP[f"BCHE{stream}202"] = 4
+
+# 💥 3. First Year Intro Subjects (Letters A to Z at the end)
+# Automatically creates BESCK104A, BESCK104B, BESCK104C... all the way to Z!
+for letter in string.ascii_uppercase:
+    CREDIT_MAP[f"BESCK104{letter}"] = 3
+    CREDIT_MAP[f"BETCK105{letter}"] = 3
+    CREDIT_MAP[f"BESCK204{letter}"] = 3
+    CREDIT_MAP[f"BPLCK205{letter}"] = 3
+
+# 💥 4. Higher Semesters (3rd to 8th) for LITERALLY EVERY BRANCH
+# This generates every 2-letter combination from AA to ZZ!
+BRANCHES = [a + b for a in string.ascii_uppercase for b in string.ascii_uppercase]
+
+GENERIC_CODES = {
+    "302": 4, "303": 3, "304": 3, "L305": 1, 
+    "401": 3, "402": 4, "403": 3, "404": 3, "L405": 1,
+    "501": 3, "502": 4, "503": 3, "504": 3, "L505": 1,
+    "506A": 3, "506B": 3, "506C": 3, "506D": 3, 
+    "601": 3, "602": 4, "603": 3, "L604": 1, 
+    "605A": 3, "605B": 3, "605C": 3, "605D": 3,
+    "606A": 3, "606B": 3, "606C": 3, "606D": 3,
+    "701": 3, "702": 3, "703": 3, 
+    "704A": 3, "704B": 3, "704C": 3, "704D": 3, 
+    "705A": 3, "705B": 3, "705C": 3, "705D": 3,
+    "801": 1, "802": 1, "803": 8, "804": 1
+}
+
+for branch in BRANCHES:
+    for suffix, credits in GENERIC_CODES.items():
+        CREDIT_MAP[f"B{branch}{suffix}"] = credits
+ṛ
+    
 
 def calculate_vtu_grade(marks, p_f):
     if p_f == 'F': return 'F', 0
@@ -153,4 +169,5 @@ def upload():
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
 
