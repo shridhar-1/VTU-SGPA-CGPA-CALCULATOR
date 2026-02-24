@@ -6,7 +6,8 @@ import os
 app = Flask(__name__)
 
 # 💥 The Bulletproof Dictionary: 100% Accurate for ECE!
-# Add 5th to 8th sem here later by just following the pattern.
+# Add 5th to 8th sem here later by just following the 
+# Master VTU Credit Dictionary (1st to 8th Sem ECE - 2022 Scheme)
 CREDIT_MAP = {
     # 1st Semester
     "BMATE101": 4, "BCHEE102": 4, "BCEDK103": 3, "BENGK106": 1,
@@ -22,7 +23,26 @@ CREDIT_MAP = {
     
     # 4th Semester ECE 
     "BEC401": 3, "BEC402": 4, "BEC403": 3, "BEC404": 3, "BECL405": 1,
-    "BUHVK406": 1, "BKSKK407": 1, "BBOK408": 1, "BAECK409": 1
+    "BUHVK406": 1, "BKSKK407": 1, "BBOK408": 1, "BAECK409": 1,
+
+    # 5th Semester ECE
+    "BEC501": 3, "BEC502": 4, "BEC503": 3, "BEC504": 3, "BECL505": 1,
+    "BEC506A": 3, "BEC506B": 3, "BEC506C": 3, "BEC506D": 3, 
+    "BKSKK507": 1, "BAECK508": 1,
+    
+    # 6th Semester ECE
+    "BEC601": 3, "BEC602": 4, "BEC603": 3, "BECL604": 1, 
+    "BEC605A": 3, "BEC605B": 3, "BEC605C": 3, "BEC605D": 3,
+    "BEC606A": 3, "BEC606B": 3, "BEC606C": 3, "BEC606D": 3,
+    "BAECK608": 1,
+    
+    # 7th Semester ECE
+    "BEC701": 3, "BEC702": 3, "BEC703": 3, 
+    "BEC704A": 3, "BEC704B": 3, "BEC704C": 3, "BEC704D": 3, 
+    "BEC705A": 3, "BEC705B": 3, "BEC705C": 3, "BEC705D": 3,
+    
+    # 8th Semester ECE (Major Project / Internship)
+    "BEC801": 1, "BEC802": 1, "BEC803": 8, "BEC804": 1
 }
 
 def calculate_vtu_grade(marks, p_f):
@@ -133,3 +153,4 @@ def upload():
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
