@@ -176,21 +176,8 @@
             <i class="fa-solid fa-rotate-right"></i> Calculate Another
         </button>
     </div>
-
-    <script>
-        // 1. Instantly add a "#loaded" hash to the URL when the result page opens.
-        // Android is forced to log this in its history stack.
-        window.location.hash = "loaded";
-
-        // 2. When the user hits the physical back button, it deletes the hash instead of exiting.
-        // We catch that deletion and teleport them to the home page!
-        window.onhashchange = function() {
-            if (!window.location.hash) {
-                window.location.replace("/");
-            }
-        };
-    </script>
 </html>
+
 
 
 
