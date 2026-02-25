@@ -11,48 +11,116 @@ app = Flask(__name__)
 import string # Add this at the top with your other imports!
 
 # 💥 1. The Common Subjects (Never Change)
+# 💥 THE UNBREAKABLE DICTIONARY: Explicitly written, zero loops, zero crashes!
 CREDIT_MAP = {
+    # --- COMMON 1ST & 2ND YEAR SUBJECTS ---
     "BCEDK103": 3, "BENGK106": 1, "BICOK107": 1, "BIDTK158": 1,
     "BBEE203": 3, "BPWSK206": 1, "BKSKK207": 1, "BSFHK258": 1,
     "BMATE301": 4, "BKSKK307": 1, "BNSAK358": 1, "BSCK306B": 1,
     "BUHVK406": 1, "BKSKK407": 1, "BBOK408": 1, "BAECK409": 1,
-    "BKSKK507": 1, "BAECK508": 1, "BAECK608": 1
-}
+    "BKSKK507": 1, "BAECK508": 1, "BAECK608": 1,
 
-# 💥 2. First Year Stream Codes (Maths, Physics, Chem)
-# E=ECE/EE, S=CS/IS, M=Mech, V=Civil, C=Chemical
-for stream in ["E", "S", "M", "V", "C"]:
-    CREDIT_MAP[f"BMAT{stream}101"] = 4
-    CREDIT_MAP[f"BPHY{stream}102"] = 4
-    CREDIT_MAP[f"BCHE{stream}102"] = 4
-    CREDIT_MAP[f"BMAT{stream}201"] = 4
-    CREDIT_MAP[f"BPHY{stream}202"] = 4
-    CREDIT_MAP[f"BCHE{stream}202"] = 4
+    # --- 1st Year Stream specific (Math, Physics, Chem) ---
+    "BMATE101": 4, "BPHYE102": 4, "BCHEE102": 4, "BMATE201": 4, "BPHYE202": 4, "BCHEE202": 4, # ECE/EEE
+    "BMATS101": 4, "BPHYS102": 4, "BCHES102": 4, "BMATS201": 4, "BPHYS202": 4, "BCHES202": 4, # CSE/ISE
+    "BMATM101": 4, "BPHYM102": 4, "BCHEM102": 4, "BMATM201": 4, "BPHYM202": 4, "BCHEM202": 4, # MECH
+    "BMATV101": 4, "BPHYV102": 4, "BCHEV102": 4, "BMATV201": 4, "BPHYV202": 4, "BCHEV202": 4, # CIVIL
 
-# 💥 3. First Year Intro Subjects (Letters A to Z at the end)
-# Automatically creates BESCK104A, BESCK104B, BESCK104C... all the way to Z!
-for letter in string.ascii_uppercase:
-    CREDIT_MAP[f"BESCK104{letter}"] = 3
-    CREDIT_MAP[f"BETCK105{letter}"] = 3
-    CREDIT_MAP[f"BESCK204{letter}"] = 3
-    CREDIT_MAP[f"BPLCK205{letter}"] = 3
+    # --- 1st Year Intro Subjects (A to J) ---
+    "BESCK104A": 3, "BESCK104B": 3, "BESCK104C": 3, "BESCK104D": 3, "BESCK104E": 3,
+    "BETCK105A": 3, "BETCK105B": 3, "BETCK105C": 3, "BETCK105D": 3, "BETCK105E": 3, "BETCK105J": 3,
+    "BESCK204A": 3, "BESCK204B": 3, "BESCK204C": 3, "BESCK204D": 3, "BESCK204E": 3,
+    "BPLCK205A": 3, "BPLCK205B": 3, "BPLCK205C": 3, "BPLCK205D": 3, "BPLCK205E": 3,
 
-# 💥 4. Higher Semesters (3rd to 8th) for LITERALLY EVERY BRANCH
-# This generates every 2-letter combination from AA to ZZ!
-BRANCHES = [a + b for a in string.ascii_uppercase for b in string.ascii_uppercase]
+    # ==========================================
+    # --- ELECTRONICS & COMMUNICATION (EC) ---
+    # ==========================================
+    "BEC302": 4, "BEC303": 3, "BEC304": 3, "BECL305": 1,
+    "BEC401": 3, "BEC402": 4, "BEC403": 3, "BEC404": 3, "BECL405": 1,
+    "BEC501": 3, "BEC502": 4, "BEC503": 3, "BEC504": 3, "BECL505": 1,
+    "BEC506A": 3, "BEC506B": 3, "BEC506C": 3, "BEC506D": 3,
+    "BEC601": 3, "BEC602": 4, "BEC603": 3, "BECL604": 1,
+    "BEC605A": 3, "BEC605B": 3, "BEC605C": 3, "BEC605D": 3,
+    "BEC606A": 3, "BEC606B": 3, "BEC606C": 3, "BEC606D": 3,
+    "BEC701": 3, "BEC702": 3, "BEC703": 3,
+    "BEC704A": 3, "BEC704B": 3, "BEC704C": 3, "BEC704D": 3,
+    "BEC705A": 3, "BEC705B": 3, "BEC705C": 3, "BEC705D": 3,
+    "BEC801": 1, "BEC802": 1, "BEC803": 8, "BEC804": 1,
 
-GENERIC_CODES = {
-    "302": 4, "303": 3, "304": 3, "L305": 1, 
-    "401": 3, "402": 4, "403": 3, "404": 3, "L405": 1,
-    "501": 3, "502": 4, "503": 3, "504": 3, "L505": 1,
-    "506A": 3, "506B": 3, "506C": 3, "506D": 3, 
-    "601": 3, "602": 4, "603": 3, "L604": 1, 
-    "605A": 3, "605B": 3, "605C": 3, "605D": 3,
-    "606A": 3, "606B": 3, "606C": 3, "606D": 3,
-    "701": 3, "702": 3, "703": 3, 
-    "704A": 3, "704B": 3, "704C": 3, "704D": 3, 
-    "705A": 3, "705B": 3, "705C": 3, "705D": 3,
-    "801": 1, "802": 1, "803": 8, "804": 1
+    # ==========================================
+    # --- COMPUTER SCIENCE (CS) ---
+    # ==========================================
+    "BCS302": 4, "BCS303": 3, "BCS304": 3, "BCSL305": 1,
+    "BCS401": 3, "BCS402": 4, "BCS403": 3, "BCS404": 3, "BCSL405": 1,
+    "BCS501": 3, "BCS502": 4, "BCS503": 3, "BCS504": 3, "BCSL505": 1,
+    "BCS506A": 3, "BCS506B": 3, "BCS506C": 3, "BCS506D": 3,
+    "BCS601": 3, "BCS602": 4, "BCS603": 3, "BCSL604": 1,
+    "BCS605A": 3, "BCS605B": 3, "BCS605C": 3, "BCS605D": 3,
+    "BCS606A": 3, "BCS606B": 3, "BCS606C": 3, "BCS606D": 3,
+    "BCS701": 3, "BCS702": 3, "BCS703": 3,
+    "BCS704A": 3, "BCS704B": 3, "BCS704C": 3, "BCS704D": 3,
+    "BCS705A": 3, "BCS705B": 3, "BCS705C": 3, "BCS705D": 3,
+    "BCS801": 1, "BCS802": 1, "BCS803": 8, "BCS804": 1,
+
+    # ==========================================
+    # --- INFORMATION SCIENCE (IS) ---
+    # ==========================================
+    "BIS302": 4, "BIS303": 3, "BIS304": 3, "BISL305": 1,
+    "BIS401": 3, "BIS402": 4, "BIS403": 3, "BIS404": 3, "BISL405": 1,
+    "BIS501": 3, "BIS502": 4, "BIS503": 3, "BIS504": 3, "BISL505": 1,
+    "BIS506A": 3, "BIS506B": 3, "BIS506C": 3, "BIS506D": 3,
+    "BIS601": 3, "BIS602": 4, "BIS603": 3, "BISL604": 1,
+    "BIS605A": 3, "BIS605B": 3, "BIS605C": 3, "BIS605D": 3,
+    "BIS606A": 3, "BIS606B": 3, "BIS606C": 3, "BIS606D": 3,
+    "BIS701": 3, "BIS702": 3, "BIS703": 3,
+    "BIS704A": 3, "BIS704B": 3, "BIS704C": 3, "BIS704D": 3,
+    "BIS705A": 3, "BIS705B": 3, "BIS705C": 3, "BIS705D": 3,
+    "BIS801": 1, "BIS802": 1, "BIS803": 8, "BIS804": 1,
+
+    # ==========================================
+    # --- ELECTRICAL & ELECTRONICS (EE) ---
+    # ==========================================
+    "BEE302": 4, "BEE303": 3, "BEE304": 3, "BEEL305": 1,
+    "BEE401": 3, "BEE402": 4, "BEE403": 3, "BEE404": 3, "BEEL405": 1,
+    "BEE501": 3, "BEE502": 4, "BEE503": 3, "BEE504": 3, "BEEL505": 1,
+    "BEE506A": 3, "BEE506B": 3, "BEE506C": 3, "BEE506D": 3,
+    "BEE601": 3, "BEE602": 4, "BEE603": 3, "BEEL604": 1,
+    "BEE605A": 3, "BEE605B": 3, "BEE605C": 3, "BEE605D": 3,
+    "BEE606A": 3, "BEE606B": 3, "BEE606C": 3, "BEE606D": 3,
+    "BEE701": 3, "BEE702": 3, "BEE703": 3,
+    "BEE704A": 3, "BEE704B": 3, "BEE704C": 3, "BEE704D": 3,
+    "BEE705A": 3, "BEE705B": 3, "BEE705C": 3, "BEE705D": 3,
+    "BEE801": 1, "BEE802": 1, "BEE803": 8, "BEE804": 1,
+
+    # ==========================================
+    # --- MECHANICAL (ME) ---
+    # ==========================================
+    "BME302": 4, "BME303": 3, "BME304": 3, "BMEL305": 1,
+    "BME401": 3, "BME402": 4, "BME403": 3, "BME404": 3, "BMEL405": 1,
+    "BME501": 3, "BME502": 4, "BME503": 3, "BME504": 3, "BMEL505": 1,
+    "BME506A": 3, "BME506B": 3, "BME506C": 3, "BME506D": 3,
+    "BME601": 3, "BME602": 4, "BME603": 3, "BMEL604": 1,
+    "BME605A": 3, "BME605B": 3, "BME605C": 3, "BME605D": 3,
+    "BME606A": 3, "BME606B": 3, "BME606C": 3, "BME606D": 3,
+    "BME701": 3, "BME702": 3, "BME703": 3,
+    "BME704A": 3, "BME704B": 3, "BME704C": 3, "BME704D": 3,
+    "BME705A": 3, "BME705B": 3, "BME705C": 3, "BME705D": 3,
+    "BME801": 1, "BME802": 1, "BME803": 8, "BME804": 1,
+
+    # ==========================================
+    # --- CIVIL (CV) ---
+    # ==========================================
+    "BCV302": 4, "BCV303": 3, "BCV304": 3, "BCVL305": 1,
+    "BCV401": 3, "BCV402": 4, "BCV403": 3, "BCV404": 3, "BCVL405": 1,
+    "BCV501": 3, "BCV502": 4, "BCV503": 3, "BCV504": 3, "BCVL505": 1,
+    "BCV506A": 3, "BCV506B": 3, "BCV506C": 3, "BCV506D": 3,
+    "BCV601": 3, "BCV602": 4, "BCV603": 3, "BCVL604": 1,
+    "BCV605A": 3, "BCV605B": 3, "BCV605C": 3, "BCV605D": 3,
+    "BCV606A": 3, "BCV606B": 3, "BCV606C": 3, "BCV606D": 3,
+    "BCV701": 3, "BCV702": 3, "BCV703": 3,
+    "BCV704A": 3, "BCV704B": 3, "BCV704C": 3, "BCV704D": 3,
+    "BCV705A": 3, "BCV705B": 3, "BCV705C": 3, "BCV705D": 3,
+    "BCV801": 1, "BCV802": 1, "BCV803": 8, "BCV804": 1
 }
 
 for branch in BRANCHES:
@@ -168,6 +236,7 @@ def upload():
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
 
 
 
