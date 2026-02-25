@@ -134,38 +134,55 @@ def process_pdf(files):
                     elif found_usn != master_usn:
                         return {"error": "Security Alert: Multiple USNs detected!"}
                 
-                # Scan line by line safely using ONLY the dictionary
                 lines = text.split('\n')
                 for line in lines:
-                    for code, credits in CREDIT_MAP.items():
-                        if re.search(rf'\b{code}\b', line):
-                            
-                            # 💥 THE FIX: Find ALL numbers on the line ignoring missing letters!
-                            numbers = [int(n) for n in re.findall(r'\b\d{1,3}\b', line)]
-                            
-                            if numbers:
-                                # Filter out any numbers > 100 just to be safe
-                                valid_marks = [n for n in numbers if n <= 100]
+                    
+                    # 💥 THE HYBRID RADAR: Finds ANY VTU Code, including Open Electives!
+                    code_match = re.search(r'\bB[A-Z]{2,4}\d{3}[A-Z]?\b', line)
+                    
+                    if code_match:
+                        code = code_match.group(0)
+                        
+                        # 💥 THE SMART FALLBACK: If not in dictionary, guess safely!
+                        if code in CREDIT_MAP:
+                            credits = CREDIT_MAP[code]
+                        else:
+                            if "786" in code: credits = 2 # Project Phase II
+                            elif "803" in code: credits = 8 # Major Project
+                            elif re.search(r'(05|06|07|08|09|L)[A-Z]?$', code): credits = 1
+                            else: credits = 3 # Default for Open/Professional Electives
+                        
+                        # Extract ALL numbers on the line ignoring missing P/F letters
+                        numbers = [int(n) for n in re.findall(r'\b\d{1,3}\b', line)]
+                        valid_marks = [n for n in numbers if n <= 200] # Safe limit
+                        
+                        if valid_marks:
+                            # VTU Format is usually: [Internal, External, Total]
+                            if len(valid_marks) >= 3:
+                                marks = valid_marks[-1] # Total is the last number
+                            elif len(valid_marks) == 2:
+                                marks = valid_marks[0] + valid_marks[1] # Sum Int + Ext
+                            else:
+                                marks = valid_marks[0]
                                 
-                                if valid_marks:
-                                    # The highest number on the line is ALWAYS the Total Marks!
-                                    marks = max(valid_marks)
-                                    
-                                    # Assume Pass unless we explicitly see 'F', 'FAIL', or marks < 40
-                                    p_f = 'F' if re.search(r'\b(F|FAIL)\b', line.upper()) or marks < 40 else 'P'
-                                    
-                                    grade_letter, gp = calculate_vtu_grade(marks, p_f)
-                                    
-                                    # Extract Semester from code (e.g. BEC302 -> 3)
-                                    sem_match = re.search(r'\d', code)
-                                    sem = int(sem_match.group()) if sem_match else 0
-                                    
-                                    # Backlog handling (keep highest marks)
-                                    if code not in best_subjects or marks > best_subjects[code]["marks"]:
-                                        best_subjects[code] = {
-                                            "marks": marks, "grade": grade_letter, 
-                                            "gp": gp, "credits": credits, "sem": sem
-                                        }
+                            # SCALING FIX: Subjects like BEC786 are out of 200 marks!
+                            percentage = marks
+                            if ("786" in code or "803" in code) or marks > 100:
+                                percentage = (marks / 200) * 100 if marks <= 200 else 100
+                            
+                            p_f = 'F' if re.search(r'\b(F|FAIL)\b', line.upper()) or percentage < 40 else 'P'
+                            
+                            grade_letter, gp = calculate_vtu_grade(percentage, p_f)
+                            
+                            sem_match = re.search(r'\d', code)
+                            sem = int(sem_match.group()) if sem_match else 0
+                            
+                            if code not in best_subjects or marks > best_subjects[code].get("raw_marks", 0):
+                                best_subjects[code] = {
+                                    "code": code, "marks": marks, "raw_marks": marks,
+                                    "grade": grade_letter, "gp": gp, 
+                                    "credits": credits, "sem": sem
+                                }
 
     if not best_subjects: 
         return {"error": "Could not extract marks. Make sure it is a valid PDF."}
@@ -223,4 +240,5 @@ def upload():
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
 
