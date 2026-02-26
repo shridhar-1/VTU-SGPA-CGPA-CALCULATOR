@@ -41,17 +41,18 @@ def process_pdf(files):
                         code = code_match.group(0)
                         credits = CREDIT_MAP.get(code, 3) 
                         
-                        # Find all numbers on the line
                         nums = [int(n) for n in re.findall(r'\b\d{1,3}\b', line) if int(n) <= 200]
                         
                         if nums:
-                            # 💥 1ST YEAR FIX: Take the highest number, OR the 3rd number (Total)
+                            # 💥 FIX 1: Safely grab the highest number (Total Marks). No more "last number" hack!
                             marks = max(nums) 
-                            if len(nums) >= 3:
-                                marks = nums[-1] 
                             
                             perc = (marks / 2) if marks > 100 else marks
-                            p_f = 'F' if perc < 40 or 'F' in line.upper() else 'P'
+                            
+                            # 💥 FIX 2: Only fail if the word is exactly "F" or "FAIL".
+                            has_f_grade = bool(re.search(r'\b(F|FAIL)\b', line.upper()))
+                            p_f = 'F' if perc < 40 or has_f_grade else 'P'
+                            
                             grade, gp = calculate_vtu_grade(perc, p_f)
                             sem = int(re.search(r'\d', code).group()) if re.search(r'\d', code) else 0
                             
@@ -73,7 +74,6 @@ def process_pdf(files):
     sems = [{"semester": s, "sgpa": round(sem_dict[s]["earned"]/sem_dict[s]["credits"], 2), "subjects": sem_dict[s]["subjects"]} for s in sorted(sem_dict.keys())]
     return {"cgpa": round(total_earn/total_cr, 2) if total_cr > 0 else 0, "semesters": sems}
 
-# 💥 THESE ARE THE DOORS! Do not delete them!
 @app.route('/')
 def index():
     return render_template('index.html')
