@@ -93,10 +93,23 @@ def calculate_vtu_grade(marks, p_f):
     
 def process_pdf(files):
     best_subjects = {}
+    master_usn = None  # 💥 This is our memory for the first USN it sees
+    
     for file in files:
         with pdfplumber.open(file) as pdf:
             for page in pdf.pages:
                 text = page.extract_text(layout=True) or ""
+                
+                # 💥 THE USN SECURITY LOCK
+                usn_match = re.search(r'\b[1-4][A-Z]{2}\d{2}[A-Z]{2}\d{3}\b', text.upper())
+                if usn_match:
+                    found_usn = usn_match.group(0)
+                    if master_usn is None: 
+                        master_usn = found_usn # Save the first USN
+                    elif found_usn != master_usn:
+                        # If a second PDF has a different USN, crash it instantly!
+                        return {"error": f"Security Alert: Multiple USNs detected ({master_usn} and {found_usn}). Please upload PDFs of the same student!"}
+                
                 lines = text.split('\n')
                 for line in lines:
                     code_match = re.search(r'\bB[A-Z]{2,4}\d{3}[A-Z]?\b', line)
@@ -107,14 +120,11 @@ def process_pdf(files):
                         nums = [int(n) for n in re.findall(r'\b\d{1,3}\b', line) if int(n) <= 200]
                         
                         if nums:
-                            # 💥 FIX 1: Safely grab the highest number (Total Marks). No more "last number" hack!
                             marks = max(nums) 
-                            
                             perc = (marks / 2) if marks > 100 else marks
                             
-                            # 💥 FIX 2: Only fail if the word is exactly "F" or "FAIL".
                             has_f_grade = bool(re.search(r'\b(F|FAIL)\b', line.upper()))
-                            p_f = 'F' if perc < 40 or has_f_grade else 'P'
+                            p_f = 'F' if perc < 35 or has_f_grade else 'P'
                             
                             grade, gp = calculate_vtu_grade(perc, p_f)
                             sem = int(re.search(r'\d', code).group()) if re.search(r'\d', code) else 0
@@ -122,7 +132,8 @@ def process_pdf(files):
                             if code not in best_subjects or marks > best_subjects[code]['marks']:
                                 best_subjects[code] = {"marks": marks, "grade": grade, "gp": gp, "credits": credits, "sem": sem}
     
-    if not best_subjects: return {"error": "No data found"}
+    if not best_subjects: return {"error": "Could not extract marks. Make sure it is a valid VTU PDF."}
+    
     sem_dict = {}
     total_cr = total_earn = 0
     for code, d in best_subjects.items():
@@ -136,7 +147,6 @@ def process_pdf(files):
 
     sems = [{"semester": s, "sgpa": round(sem_dict[s]["earned"]/sem_dict[s]["credits"], 2), "subjects": sem_dict[s]["subjects"]} for s in sorted(sem_dict.keys())]
     return {"cgpa": round(total_earn/total_cr, 2) if total_cr > 0 else 0, "semesters": sems}
-
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -150,5 +160,6 @@ def upload():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
+
 
 
