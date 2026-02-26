@@ -81,15 +81,16 @@ CREDIT_MAP = {
 }
 
 def calculate_vtu_grade(marks, p_f):
-    elif p_f == 'F' or marks < 35: return 'F', 0
-    elif marks >= 90: return 'O', 10
+    if p_f == 'F' or marks < 35: return 'F', 0
+    if marks >= 90: return 'O', 10
     elif marks >= 80: return 'A+', 9
     elif marks >= 70: return 'A', 8
     elif marks >= 60: return 'B+', 7
     elif marks >= 55: return 'B', 6
     elif marks >= 50: return 'C', 5
     elif marks >= 35: return 'P', 4
-    else invalid
+    else: return 'F', 0
+    
 def process_pdf(files):
     best_subjects = {}
     for file in files:
@@ -149,4 +150,5 @@ def upload():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
+
 
