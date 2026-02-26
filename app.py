@@ -119,107 +119,52 @@ def calculate_vtu_grade(marks, p_f):
 def process_pdf(files):
     best_subjects = {}
     master_usn = None
-    
     for file in files:
         with pdfplumber.open(file) as pdf:
             for page in pdf.pages:
                 text = page.extract_text(layout=True) or ""
-                
-                # USN Security Lock
-                usn_match = re.search(r'\b[1-4][A-Z]{2}\d{2}[A-Z]{2}\d{3}\b', text.upper())
-                if usn_match:
-                    found_usn = usn_match.group(0)
-                    if master_usn is None: 
-                        master_usn = found_usn
-                    elif found_usn != master_usn:
-                        return {"error": "Security Alert: Multiple USNs detected!"}
-                
                 lines = text.split('\n')
                 for line in lines:
-                    
-                    # 💥 THE HYBRID RADAR: Finds ANY VTU Code, including Open Electives!
                     code_match = re.search(r'\bB[A-Z]{2,4}\d{3}[A-Z]?\b', line)
-                    
                     if code_match:
                         code = code_match.group(0)
+                        credits = CREDIT_MAP.get(code, 3) 
                         
-                        # 💥 THE SMART FALLBACK: If not in dictionary, guess safely!
-                        if code in CREDIT_MAP:
-                            credits = CREDIT_MAP[code]
-                        else:
-                            if "786" in code: credits = 2 # Project Phase II
-                            elif "803" in code: credits = 8 # Major Project
-                            elif re.search(r'(05|06|07|08|09|L)[A-Z]?$', code): credits = 1
-                            else: credits = 3 # Default for Open/Professional Electives
+                        # Find all numbers on the line
+                        nums = [int(n) for n in re.findall(r'\b\d{1,3}\b', line) if int(n) <= 200]
                         
-                        # Extract ALL numbers on the line ignoring missing P/F letters
-                        numbers = [int(n) for n in re.findall(r'\b\d{1,3}\b', line)]
-                        valid_marks = [n for n in numbers if n <= 200] # Safe limit
-                        
-                        if valid_marks:
-                            # VTU Format is usually: [Internal, External, Total]
-                            if len(valid_marks) >= 3:
-                                marks = valid_marks[-1] # Total is the last number
-                            elif len(valid_marks) == 2:
-                                marks = valid_marks[0] + valid_marks[1] # Sum Int + Ext
-                            else:
-                                marks = valid_marks[0]
-                                
-                            # SCALING FIX: Subjects like BEC786 are out of 200 marks!
-                            percentage = marks
-                            if ("786" in code or "803" in code) or marks > 100:
-                                percentage = (marks / 200) * 100 if marks <= 200 else 100
+                        if nums:
+                            # 💥 NEW LOGIC: If there are multiple numbers, take the largest 
+                            # one (Total) or the last one (VTU standard).
+                            marks = max(nums) 
                             
-                            p_f = 'F' if re.search(r'\b(F|FAIL)\b', line.upper()) or percentage < 40 else 'P'
+                            # If it's a 1st year subject and the scanner picked a low number like '13',
+                            # it's likely catching internal marks. We force it to look for a higher total.
+                            if len(nums) >= 3:
+                                marks = nums[-1] # Usually the 3rd number is the total
                             
-                            grade_letter, gp = calculate_vtu_grade(percentage, p_f)
+                            perc = (marks / 2) if marks > 100 else marks
+                            p_f = 'F' if perc < 40 or 'F' in line.upper() else 'P'
+                            grade, gp = calculate_vtu_grade(perc, p_f)
+                            sem = int(re.search(r'\d', code).group()) if re.search(r'\d', code) else 0
                             
-                            sem_match = re.search(r'\d', code)
-                            sem = int(sem_match.group()) if sem_match else 0
-                            
-                            if code not in best_subjects or marks > best_subjects[code].get("raw_marks", 0):
-                                best_subjects[code] = {
-                                    "code": code, "marks": marks, "raw_marks": marks,
-                                    "grade": grade_letter, "gp": gp, 
-                                    "credits": credits, "sem": sem
-                                }
-
-    if not best_subjects: 
-        return {"error": "Could not extract marks. Make sure it is a valid PDF."}
+                            if code not in best_subjects or marks > best_subjects[code]['marks']:
+                                best_subjects[code] = {"marks": marks, "grade": grade, "gp": gp, "credits": credits, "sem": sem}
     
-    # Math Engine
+    if not best_subjects: return {"error": "No data found"}
     sem_dict = {}
-    total_credits = 0
-    total_earned = 0
-    
-    for code, data in best_subjects.items():
-        s = data["sem"]
-        if s not in sem_dict: 
-            sem_dict[s] = {"credits": 0, "earned": 0, "subjects": []}
-        
-        sem_dict[s]["credits"] += data["credits"]
-        sem_dict[s]["earned"] += (data["gp"] * data["credits"])
-        sem_dict[s]["subjects"].append({
-            "code": code, "marks": data["marks"], 
-            "grade": data["grade"], "credits": data["credits"]
-        })
-        
-        total_credits += data["credits"]
-        total_earned += (data["gp"] * data["credits"])
+    total_cr = total_earn = 0
+    for code, d in best_subjects.items():
+        s = d["sem"]
+        if s not in sem_dict: sem_dict[s] = {"credits": 0, "earned": 0, "subjects": []}
+        sem_dict[s]["credits"] += d["credits"]
+        sem_dict[s]["earned"] += (d["gp"] * d["credits"])
+        sem_dict[s]["subjects"].append({"code": code, "marks": d["marks"], "grade": d["grade"], "credits": d["credits"]})
+        total_cr += d["credits"]; total_earn += (d["gp"] * d["credits"])
 
-    semesters_data = []
-    for s in sorted(sem_dict.keys()):
-        sgpa = round(sem_dict[s]["earned"] / sem_dict[s]["credits"], 2) if sem_dict[s]["credits"] > 0 else 0
-        semesters_data.append({
-            "semester": s, "sgpa": sgpa, 
-            "credits": sem_dict[s]["credits"], "subjects": sem_dict[s]["subjects"]
-        })
-        
-    cgpa = round(total_earned / total_credits, 2) if total_credits > 0 else 0
-    return {"cgpa": cgpa, "semesters": semesters_data}
-@app.route('/')
-def index():
-    return render_template('index.html')
+    sems = [{"semester": s, "sgpa": round(sem_dict[s]["earned"]/sem_dict[s]["credits"], 2), "subjects": sem_dict[s]["subjects"]} for s in sorted(sem_dict.keys())]
+    return {"cgpa": round(total_earn/total_cr, 2), "semesters": sems}
+
 
 @app.route('/upload', methods=['POST'])
 def upload():
@@ -240,5 +185,6 @@ def upload():
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
 
 
