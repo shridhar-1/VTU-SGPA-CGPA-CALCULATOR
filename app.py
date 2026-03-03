@@ -80,17 +80,6 @@ CREDIT_MAP = {
     "BCV801": 1, "BCV802": 1, "BCV803": 8, "BCV804": 1
 }
 
-def calculate_vtu_grade(marks, p_f):
-    if p_f == 'F' or marks < 35: return 'F', 0
-    if marks >= 90: return 'O', 10
-    elif marks >= 80: return 'A+', 9
-    elif marks >= 70: return 'A', 8
-    elif marks >= 60: return 'B+', 7
-    elif marks >= 55: return 'B', 6
-    elif marks >= 50: return 'C', 5
-    elif marks >= 35: return 'P', 4
-    else: return 'F', 0
-    
 def process_pdf(files):
     best_subjects = {}
     master_usn = None 
@@ -115,19 +104,22 @@ def process_pdf(files):
                     if code_match:
                         code = code_match.group(0)
                         
-                        # 💥 RESTORED HYBRID RADAR: Smart Credit Guessing!
                         if code in CREDIT_MAP:
                             credits = CREDIT_MAP[code]
                         else:
-                            if "786" in code: credits = 2 # Phase II Project
-                            elif "803" in code: credits = 8 # Major Project
-                            # VTU 1-credit subjects usually end in 06, 07, 08, 09, 58 or have an 'L' for Lab
+                            if "786" in code: credits = 2 
+                            elif "803" in code: credits = 8 
                             elif re.search(r'(06|07|08|09|58)[A-Z]?$', code) or 'L' in code: credits = 1
-                            else: credits = 3 # Default for standard subjects
+                            else: credits = 3 
                         
                         nums = [int(n) for n in re.findall(r'\b\d{1,3}\b', line) if int(n) <= 200]
                         
                         if nums:
+                            # 💥 THE PE FIX: If External Marks are missing (< 3 numbers on the line),
+                            # force the credits to 0 so it doesn't artificially boost/drop the SGPA!
+                            if len(nums) < 3:
+                                credits = 0
+
                             marks = max(nums) 
                             perc = (marks / 2) if marks > 100 else marks
                             
@@ -153,7 +145,7 @@ def process_pdf(files):
         total_cr += d["credits"]
         total_earn += (d["gp"] * d["credits"])
 
-    sems = [{"semester": s, "sgpa": round(sem_dict[s]["earned"]/sem_dict[s]["credits"], 2), "subjects": sem_dict[s]["subjects"]} for s in sorted(sem_dict.keys())]
+    sems = [{"semester": s, "sgpa": round(sem_dict[s]["earned"]/sem_dict[s]["credits"], 2) if sem_dict[s]["credits"] > 0 else 0, "subjects": sem_dict[s]["subjects"]} for s in sorted(sem_dict.keys())]
     return {"cgpa": round(total_earn/total_cr, 2) if total_cr > 0 else 0, "semesters": sems}
 @app.route('/')
 def index():
@@ -168,6 +160,7 @@ def upload():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
+
 
 
 
