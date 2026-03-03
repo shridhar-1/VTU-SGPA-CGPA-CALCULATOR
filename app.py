@@ -5,7 +5,7 @@ import os
 
 app = Flask(__name__)
 
-# Master Dictionary - Explicitly defined to prevent memory crashes
+# Master Dictionary
 CREDIT_MAP = {
     "BCEDK103": 3, "BENGK106": 1, "BICOK107": 1, "BIDTK158": 1,
     "BBEE203": 3, "BPWSK206": 1, "BKSKK207": 1, "BSFHK258": 1,
@@ -36,7 +36,9 @@ def process_pdf(files):
     for file in files:
         with pdfplumber.open(file) as pdf:
             for page in pdf.pages:
-                text = page.extract_text(layout=True) or ""
+                
+                # 💥 WATERMARK FIX: Removed layout=True so background text doesn't break the lines!
+                text = page.extract_text() or ""
                 
                 # USN Security Lock
                 usn_match = re.search(r'\b[1-4][A-Z]{2}\d{2}[A-Z]{2}\d{3}\b', text.upper())
@@ -53,7 +55,10 @@ def process_pdf(files):
                     if code_match:
                         code = code_match.group(0)
                         
-                        if code in CREDIT_MAP:
+                        # 💥 BULLETPROOF PE FIX: Explicitly check for 0-credit course codes
+                        if any(x in code for x in ["PE", "YOG", "NSS", "NSA"]):
+                            credits = 0
+                        elif code in CREDIT_MAP:
                             credits = CREDIT_MAP[code]
                         else:
                             if "786" in code: credits = 2 
@@ -65,11 +70,6 @@ def process_pdf(files):
                         
                         if nums:
                             marks = max(nums) 
-                            
-                            # 💥 SMART PE FIX: Only drop to 0 credits if it's clearly missing external marks AND it's a small internal total
-                            if len(nums) < 3 and marks <= 50:
-                                credits = 0
-
                             perc = (marks / 2) if marks > 100 else marks
                             
                             has_f_grade = bool(re.search(r'\b(F|FAIL)\b', line.upper()))
@@ -81,7 +81,7 @@ def process_pdf(files):
                             if code not in best_subjects or marks > best_subjects[code]['marks']:
                                 best_subjects[code] = {"marks": marks, "grade": grade, "gp": gp, "credits": credits, "sem": sem}
     
-    if not best_subjects: return {"error": "Could not extract marks. Make sure it is a valid VTU PDF."}
+    if not best_subjects: return {"error": "Could not extract marks. The VTU watermark might be too heavy, or the PDF is invalid."}
     
     sem_dict = {}
     total_cr = total_earn = 0
