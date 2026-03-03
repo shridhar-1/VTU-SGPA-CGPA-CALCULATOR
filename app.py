@@ -93,7 +93,7 @@ def calculate_vtu_grade(marks, p_f):
     
 def process_pdf(files):
     best_subjects = {}
-    master_usn = None  # 💥 This is our memory for the first USN it sees
+    master_usn = None 
     
     for file in files:
         with pdfplumber.open(file) as pdf:
@@ -105,9 +105,8 @@ def process_pdf(files):
                 if usn_match:
                     found_usn = usn_match.group(0)
                     if master_usn is None: 
-                        master_usn = found_usn # Save the first USN
+                        master_usn = found_usn 
                     elif found_usn != master_usn:
-                        # If a second PDF has a different USN, crash it instantly!
                         return {"error": f"Security Alert: Multiple USNs detected ({master_usn} and {found_usn}). Please upload PDFs of the same student!"}
                 
                 lines = text.split('\n')
@@ -115,7 +114,16 @@ def process_pdf(files):
                     code_match = re.search(r'\bB[A-Z]{2,4}\d{3}[A-Z]?\b', line)
                     if code_match:
                         code = code_match.group(0)
-                        credits = CREDIT_MAP.get(code, 3) 
+                        
+                        # 💥 RESTORED HYBRID RADAR: Smart Credit Guessing!
+                        if code in CREDIT_MAP:
+                            credits = CREDIT_MAP[code]
+                        else:
+                            if "786" in code: credits = 2 # Phase II Project
+                            elif "803" in code: credits = 8 # Major Project
+                            # VTU 1-credit subjects usually end in 06, 07, 08, 09, 58 or have an 'L' for Lab
+                            elif re.search(r'(06|07|08|09|58)[A-Z]?$', code) or 'L' in code: credits = 1
+                            else: credits = 3 # Default for standard subjects
                         
                         nums = [int(n) for n in re.findall(r'\b\d{1,3}\b', line) if int(n) <= 200]
                         
@@ -160,6 +168,7 @@ def upload():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
+
 
 
 
