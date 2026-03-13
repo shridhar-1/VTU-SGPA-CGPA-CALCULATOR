@@ -9,7 +9,7 @@ app = Flask(__name__)
 CREDIT_MAP = {
     "BCEDK103": 3, "BENGK106": 1, "BICOK107": 1, "BIDTK158": 1,
     "BBEE203": 3, "BPWSK206": 1, "BKSKK207": 1, "BSFHK258": 1,
-    "BMATE301": 4, "BKSKK307": 1, "BNSAK358": 1, "BSCK306B": 1,
+    "BMATEC301": 4, "BKSKK307": 1, "BNSAK358": 1, "BSCK306B": 1,
     "BUHVK406": 1, "BKSKK407": 1, "BBOK408": 1, "BAECK409": 1,
     "BKSKK507": 1, "BAECK508": 1, "BAECK608": 1,
     "BMATE101": 4, "BPHYE102": 4, "BCHEE102": 4, "BMATE201": 4, "BPHYE202": 4, "BCHEE202": 4,
@@ -111,3 +111,4 @@ def upload():
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
